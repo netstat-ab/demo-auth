@@ -32,6 +32,8 @@ class RegisterSerializer(serializers.Serializer):
         if errors:
             raise serializers.ValidationError(errors)
 
+        return value
+
     def validate(self, attrs):
         attrs = super().validate(attrs)
         if attrs['password'] != attrs['password_confirmation']:

@@ -1,9 +1,11 @@
+import string
 from functools import partial
 
 import pytest
 from rest_framework import status
 from rest_framework.test import APIClient
 from django.urls import reverse
+
 from app.constants import text
 
 pytestmark = pytest.mark.django_db
@@ -98,28 +100,78 @@ class TestPasswordPolicy:
                 'password': password,
                 'password_confirmation': password,
             }
+
+        return factory
+
+    @pytest.fixture
+    def configure_password_policy(self, settings):
+        def factory(min_length: int, max_length: int):
+            settings.PASSWORD_POLICY = {'min_length': min_length, 'max_length': max_length}
+
         return factory
 
     @pytest.fixture(autouse=True)
-    def configure_password_policy(self, settings):
-        settings.PASSWORD_POLICY = {'min_length': self.MIN_LENGTH, 'max_length': self.MAX_LENGTH}
+    def configure_registration_service(self, settings):
+        settings.REGISTRATION_CODE_SERVICE_ADAPTER = {
+            'path': 'tests.mocks.registration_code.MockRegistrationCodeService',
+            'args': ('12345',),
+        }
+
+    @pytest.fixture(autouse=True)
+    def configure_email_service(self, settings):
+        settings.EMAIL_SERVICE_ADAPTER = {
+            'path': 'tests.mocks.email.MockEmailService',
+        }
 
     @pytest.fixture
     def do_post(self, client, url):
         return partial(client.post, url, content_type='application/json')
 
-    def test_min_length_policy(self, do_post, data):
-        password = 'P@ssw0r'
-        assert len(password) == self.MIN_LENGTH - 1
-        data = data(password)
-        response = do_post(data=data)
+    def test_min_length_policy(self, do_post, data, configure_password_policy):
+        configure_password_policy(self.MIN_LENGTH, self.MAX_LENGTH)
+
+        password = 'Aa1!sS2@'
+        assert len(password) == self.MIN_LENGTH
+        response = do_post(data=data(password))
+        assert response.status_code == status.HTTP_200_OK
+
+        password = password[:-1]
+        response = do_post(data=data(password))
         assert response.status_code == status.HTTP_400_BAD_REQUEST
         assert response.json() == {'password': [text.PASSWORD_TOO_SHORT % self.MIN_LENGTH]}
 
-    def test_max_length_policy(self, do_post, data):
-        password = 'P@ssw0rd123'
-        assert len(password) == self.MAX_LENGTH + 1
-        data = data(password)
-        response = do_post(data=data)
+    def test_max_length_policy(self, do_post, data, configure_password_policy):
+        configure_password_policy(self.MIN_LENGTH, self.MAX_LENGTH)
+
+        password = 'P@ssw0rd12'
+        assert len(password) == self.MAX_LENGTH
+        response = do_post(data=data(password))
+        assert response.status_code == status.HTTP_200_OK
+
+        password += '1'
+        response = do_post(data=data(password))
         assert response.status_code == status.HTTP_400_BAD_REQUEST
         assert response.json() == {'password': [text.PASSWORD_TOO_LONG % self.MAX_LENGTH]}
+
+    @pytest.mark.parametrize('disallowed_char', '`<б[{')
+    def test_allowed_chars_policy(self, do_post, data, configure_password_policy, disallowed_char):
+        all_allowed_chars = string.ascii_letters + string.digits + '.,!@#$%^&*-_=+'
+        configure_password_policy(self.MIN_LENGTH, len(all_allowed_chars) + 10)
+
+        response = do_post(data=data(all_allowed_chars))
+        assert response.status_code == status.HTTP_200_OK
+
+        password = all_allowed_chars + disallowed_char
+        response = do_post(data=data(password))
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert response.json() == {'password': [text.PASSWORD_CONTAINS_PROHIBITED_CHARACTERS]}
+
+    @pytest.mark.parametrize('bad_password', ('p@s1', 'P2s1', 'P@S1', 'P@s!'))
+    def test_required_chars_policy(self, do_post, data, configure_password_policy, bad_password):
+        configure_password_policy(4, self.MAX_LENGTH)
+        response = do_post(data=data(password='P@s1'))
+        assert response.status_code == status.HTTP_200_OK
+
+        response = do_post(data=data(password=bad_password))
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert response.json() == {'password': [text.PASSWORD_DOES_NOT_CONTAIN_ALL_REQUIRED_CHARACTERS]}

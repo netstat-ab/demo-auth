@@ -11,8 +11,8 @@ env = environ.Env(
     DJANGO_ALLOWED_HOSTS=(list, ['localhost']),
     DJANGO_DATABASE_URL=(str, 'psql://postgres:postgres@auth-db:5432/auth'),
     DJANGO_TIME_ZONE=(str, 'Europe/Moscow'),
-    EMAIL_SERVICE_BACKEND=(str, 'app.services.KafkaEmail'),
-    REGISTRATION_CODE_SERVICE_ADAPTER=(str, 'app.services.SecureRegistrationCodeServiceAdapter'),
+    EMAIL_SERVICE_ADAPTER_PATH=(str, 'app.services.KafkaEmail'),
+    REGISTRATION_CODE_SERVICE_ADAPTER_PATH=(str, 'app.services.SecureRegistrationCodeServiceAdapter'),
     REGISTRATION_CODE_LENGTH=(int, 32),
     PASSWORD_POLICY_MIN_LENGTH=(int, 8),
     PASSWORD_POLICY_MAX_LENGTH=(int, 20),
@@ -111,6 +111,6 @@ LOGGING = {
     },
 }
 
-EMAIL_SERVICE_BACKEND = env('EMAIL_SERVICE_BACKEND')
-REGISTRATION_CODE_SERVICE_ADAPTER = env('REGISTRATION_CODE_SERVICE_ADAPTER')
+EMAIL_SERVICE_ADAPTER = {'path': env('EMAIL_SERVICE_ADAPTER_PATH')}
+REGISTRATION_CODE_SERVICE_ADAPTER = {'path': env('REGISTRATION_CODE_SERVICE_ADAPTER_PATH')}
 REGISTRATION_CODE_LENGTH = env('REGISTRATION_CODE_LENGTH')

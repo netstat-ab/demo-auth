@@ -5,6 +5,7 @@ __all__ = [
 
 import inspect
 
+from django.conf import settings
 from django.utils.module_loading import import_string
 
 from .require import require
@@ -19,20 +20,27 @@ def _require(condition):
 
 
 class AdapterMixin:
-    adapter_class: str
+    adapter_config: str
 
     @classmethod
     def get_instance(cls):
-        adapter_class = getattr(cls, 'adapter_class')
-        _require(isinstance(adapter_class, str))
+        config = getattr(settings, cls.adapter_config, None)
+        assert isinstance(config, dict)
+
+        path = config.get('path')
+        assert isinstance(path, str)
 
         try:
-            adapter_class = import_string(adapter_class)
+            adapter_class = import_string(path)
         except ImportError:
-            raise ImproperlyConfigured
+            raise ImproperlyConfigured(f'Failed to find adapter {path}')
 
-        _require(inspect.isclass(adapter_class))
-        _require(not inspect.isabstract(adapter_class))
-        _require(issubclass(adapter_class, cls))
+        assert inspect.isclass(adapter_class)
+        assert not inspect.isabstract(adapter_class)
+        assert issubclass(adapter_class, cls)
 
-        return adapter_class()
+        args = config.get('args', ())
+        kwargs = config.get('kwargs', {})
+
+        print(args, kwargs)
+        return adapter_class(*args, **kwargs)

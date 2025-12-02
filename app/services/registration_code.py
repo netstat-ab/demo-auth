@@ -1,4 +1,4 @@
-__all__ = ['generate_registration_code']
+__all__ = ['generate_registration_code', 'RegistrationCodeService']
 
 import abc
 import secrets
@@ -14,7 +14,7 @@ def generate_registration_code() -> str:
 
 
 class RegistrationCodeService(AdapterMixin, abc.ABC):
-    adapter_class = settings.REGISTRATION_CODE_SERVICE_ADAPTER
+    adapter_config = 'REGISTRATION_CODE_SERVICE_ADAPTER'
 
     @abc.abstractmethod
     def generate(self) -> str:

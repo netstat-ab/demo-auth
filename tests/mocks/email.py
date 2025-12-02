@@ -1,7 +1,7 @@
 from app.services.email import EmailService
 
 
-class EmailServiceMock(EmailService):
+class MockEmailService(EmailService):
     def __init__(self):
         self.success_emails = []
         self.warning_emails = []

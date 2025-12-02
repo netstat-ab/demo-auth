@@ -15,6 +15,8 @@ class EmailServiceError(Exception):
 
 
 class EmailService(AdapterMixin, abc.ABC):
+    adapter_config = 'EMAIL_SERVICE_ADAPTER'
+
     @abc.abstractmethod
     def send(
             self,
