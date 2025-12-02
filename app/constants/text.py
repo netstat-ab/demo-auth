@@ -1,0 +1,10 @@
+PASSWORD_TOO_SHORT = 'Password is too short. Minimum length allowed: %s'
+PASSWORD_TOO_LONG = 'Password is too long. Minimum length allowed: %s'
+PASSWORD_CONTAINS_PROHIBITED_CHARACTERS = (
+    'Password contains prohibited characters. Only english uppercase and lowercase letters, '
+    'digits and some special characters .,!@#$%^&*-_=+ are allowed.'
+)
+PASSWORD_DOES_NOT_CONTAIN_ALL_REQUIRED_CHARACTERS = (
+    'Password should contain at least one uppercase, one lowercase letter, one digit and one '
+    'special character .,!@#$%^&*-_=+'
+)
