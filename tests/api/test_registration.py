@@ -108,9 +108,6 @@ class TestPasswordPolicy:
     def do_post(self, client, url):
         return partial(client.post, url, content_type='application/json')
 
-    @pytest.mark.parametrize(
-
-    )
     def test_min_length_policy(self, do_post, data):
         password = 'P@ssw0r'
         assert len(password) == self.MIN_LENGTH - 1
