@@ -1,6 +1,5 @@
 __all__ = [
     'register_user',
-    'RegistrationError',
 ]
 
 from functools import partial
@@ -11,16 +10,9 @@ from app.accounts.models import User, Registration
 from app.services.email import EmailService
 from app.services.registration_code import generate_registration_code
 
-PASSWORD_POLICY_VIOLATION = 1
-
 
 def register_user(email: str, password: str) -> User:
     return RegisterUser(email, password).execute()
-
-
-class RegistrationError(Exception):
-    def __init__(self, error_code: int):
-        self.error_code = error_code
 
 
 class RegisterUser:

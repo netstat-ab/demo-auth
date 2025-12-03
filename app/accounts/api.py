@@ -1,5 +1,7 @@
+from django.db.transaction import atomic
 from django.utils.translation import gettext_lazy as _
-from rest_framework import viewsets, decorators, serializers, response
+from rest_framework import viewsets, decorators, serializers, status
+from rest_framework.response import Response
 
 from app.accounts.password_policies import (
     PasswordMinimumLengthPolicy,
@@ -8,7 +10,7 @@ from app.accounts.password_policies import (
     PasswordRequiredCharsPolicy,
     PasswordPolicyError,
 )
-from app.accounts.use_cases import register_user, RegistrationError
+from app.accounts.use_cases import register_user
 
 
 class RegisterSerializer(serializers.Serializer):
@@ -52,18 +54,16 @@ class RegisterSerializer(serializers.Serializer):
 #  update password
 #  recover password
 class UserViewSet(viewsets.ViewSet):
-    @decorators.action(
-        methods=['POST'],
-        detail=False,
-    )
+    @decorators.action(methods=['POST'], detail=False)
+    @atomic
     def register(self, request):
+        if request.user.is_authenticated:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
         serializer = RegisterSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         data = serializer.validated_data
-        try:
-            register_user(email=data['email'], password=data['password'])
-        except RegistrationError as e:
-            response_data = {'status': 'fail', 'details': e.details}
-        else:
-            response_data = {'status': 'ok'}
-        return response.Response(response_data)
+
+        register_user(email=data['email'], password=data['password'])
+
+        return Response(status=status.HTTP_200_OK)
