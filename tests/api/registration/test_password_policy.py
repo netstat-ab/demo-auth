@@ -36,21 +36,6 @@ def configure_password_policy(settings):
     return factory
 
 
-@pytest.fixture(autouse=True)
-def configure_registration_service(settings):
-    settings.REGISTRATION_CODE_SERVICE_ADAPTER = {
-        'path': 'tests.mocks.registration_code.MockRegistrationCodeService',
-        'args': ('12345',),
-    }
-
-
-@pytest.fixture(autouse=True)
-def configure_email_service(settings):
-    settings.EMAIL_SERVICE_ADAPTER = {
-        'path': 'tests.mocks.email.MockEmailService',
-    }
-
-
 @pytest.fixture
 def do_post(client, url):
     return partial(client.post, url, content_type='application/json')

@@ -2,7 +2,7 @@ import pytest
 from django.urls import reverse
 from rest_framework.test import APIClient
 
-from tests.mocks.email import MockEmailService
+from tests.mocks.email import MockEventsService
 from tests.mocks.registration_code import MockRegistrationCodeService
 from . import constants
 
@@ -36,10 +36,10 @@ def configure_password_policy(settings, password_min_length, password_max_length
 
 
 @pytest.fixture(autouse=True)
-def email_service(settings) -> type[MockEmailService]:
-    settings.EMAIL_SERVICE_ADAPTER = {'path': 'tests.mocks.email.MockEmailService'}
-    MockEmailService.cleanup()
-    return MockEmailService
+def email_service(settings) -> type[MockEventsService]:
+    settings.EMAIL_SERVICE_ADAPTER = {'path': 'tests.mocks.email.MockEventsService'}
+    MockEventsService.cleanup()
+    return MockEventsService
 
 
 @pytest.fixture(autouse=True)

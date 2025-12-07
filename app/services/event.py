@@ -1,5 +1,5 @@
 __all__ = [
-    'EmailService',
+    'EventsService',
     'EmailServiceError',
 ]
 
@@ -14,7 +14,7 @@ class EmailServiceError(Exception):
     ...
 
 
-class EmailService(AdapterMixin, abc.ABC):
+class EventsService(AdapterMixin, abc.ABC):
     adapter_config = 'EMAIL_SERVICE_ADAPTER'
 
     @abc.abstractmethod
@@ -27,18 +27,18 @@ class EmailService(AdapterMixin, abc.ABC):
     ):
         ...
 
-    def send_registration_success(self, recipient: str, registration_code: str):
+    def registration_success(self, recipient: str, registration_code: str):
         self.send(
             subject=_('Registration'),
             recipients=[recipient],
             body=f'confirm your email address {registration_code}',
         )
 
-    def send_registration_warning(self, recipient: str):
+    def registration_warning(self, recipient: str):
         ...
 
 
-class KafkaEmail(EmailService):
+class EventsServiceImpl(EventsService):
     def send(
             self,
             subject: str,
