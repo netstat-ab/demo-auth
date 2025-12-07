@@ -6,7 +6,7 @@ import freezegun
 import pytest
 from rest_framework import status
 
-from app.accounts.models import User
+from app.accounts.models import User, Registration
 
 pytestmark = pytest.mark.django_db
 
@@ -60,17 +60,14 @@ def test_it_sends_registration_email(client, url, data, email_service, registrat
     client.post(url, data=data, content_type='application/json')
     assert email_service.success_emails == [(data['email'], registration_code)]
 
-# def test_it_create_registration_record(client, url, data, email_service, registration_code_service):
-#     code = '12345'
-#     now = datetime.fromisoformat('2025-01-23T12:34:56.789012+03:00')
-#     registration_code_service(code)
-#
-#     assert not Registration.objects.filter(code=code).exists()
-#
-#     with freezegun.freeze_time(now):
-#         client.post(url, data=data, content_type='application/json')
-#     registration_record = Registration.objects.filter(code=code).first()
-#     assert registration_record is not None
-#     assert registration_record.user.email == data['email']
-#     assert registration_record.code == code
-#     assert registration_record.created_at == now
+
+def test_it_create_registration_record(client, url, data, registration_code, now):
+    assert not Registration.objects.filter(code=registration_code).exists()
+
+    with freezegun.freeze_time(now):
+        client.post(url, data=data, content_type='application/json')
+    registration_record = Registration.objects.filter(code=registration_code).first()
+    assert registration_record is not None
+    assert registration_record.user.email == data['email']
+    assert registration_record.code == registration_code
+    assert registration_record.created_at == now
