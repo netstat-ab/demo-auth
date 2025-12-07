@@ -15,7 +15,6 @@ pytestmark = pytest.mark.django_db
 class NotConfirmedUserTestBase(UserRegistrationTestBase):
     @pytest.fixture
     def data(self, now, user, password='P@ssw0rd') -> dict:
-        assert user.is_active
         assert not user.has_verified_email
         assert not user.check_password(password)
         assert user.created_at != now
@@ -60,7 +59,7 @@ class TestUserHaveRegistrationRecord(NotConfirmedUserTestBase):
     @pytest.fixture
     def existing_registration_id(self, user):
         registration = Registration.objects.get(user=user)
-        assert registration.code == constants.USER_1_REGISTRATION_CODE
+        assert registration.code == constants.USER_2_REGISTRATION_CODE
         return registration.id
 
     def test_it_removes_old_registration_record(self, client, url, data, existing_registration_id, now):

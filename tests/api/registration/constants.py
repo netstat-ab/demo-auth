@@ -6,8 +6,8 @@ PASSWORD_POLICY_MAX_LENGTH = 10
 # Код регистрации, отсутствующий в базе
 NEW_REGISTRATION_CODE = 'NEW_REGISTRATION_CODE'
 
-# Код регистрации, привязанный к пользователю email USER_1_EMAIL
-USER_1_REGISTRATION_CODE = 'USER_1_REGISTRATION_CODE'
+# Код регистрации, привязанный к пользователю email USER_2_EMAIL
+USER_2_REGISTRATION_CODE = 'USER_2_REGISTRATION_CODE'
 
 # Текущее время для freezetime
 NOW = datetime.fromisoformat('2025-10-23T12:34:56.789012+03:00')

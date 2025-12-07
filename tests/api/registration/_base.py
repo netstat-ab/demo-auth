@@ -24,7 +24,6 @@ class UserRegistrationTestBase:
         """Проверка корректности установки атрибутов, общих для всех сценариев"""
         client.post(url, data=data, content_type='application/json')
         user = User.objects.get(email=data['email'])
-        assert user.is_active
         assert not user.has_verified_email
         assert user.check_password(data['password'])
 

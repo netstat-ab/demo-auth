@@ -25,7 +25,7 @@ class RegisterUser:
         with atomic():
             user, created = User.objects.get_or_create(email=self.email)
 
-            if not user.is_active or user.has_verified_email:
+            if user.has_verified_email:
                 self._complete_with_warning()
             else:
                 if not created:

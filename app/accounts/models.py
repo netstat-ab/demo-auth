@@ -12,7 +12,6 @@ class User(AbstractBaseUser):
     USERNAME_FIELD = "email"
 
     email = models.EmailField(unique=True)
-    is_active = models.BooleanField(default=True)
     has_verified_email = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
