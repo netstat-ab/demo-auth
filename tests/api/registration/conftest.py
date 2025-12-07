@@ -1,11 +1,10 @@
-from datetime import datetime
-
 import pytest
 from django.urls import reverse
 from rest_framework.test import APIClient
 
 from tests.mocks.email import MockEmailService
 from tests.mocks.registration_code import MockRegistrationCodeService
+from . import constants
 
 
 @pytest.fixture
@@ -15,17 +14,17 @@ def client():
 
 @pytest.fixture(autouse=True)
 def password_min_length():
-    return 8
+    return constants.PASSWORD_POLICY_MIN_LENGTH
 
 
 @pytest.fixture(autouse=True)
 def password_max_length():
-    return 10
+    return constants.PASSWORD_POLICY_MAX_LENGTH
 
 
 @pytest.fixture
 def now():
-    return datetime.fromisoformat('2025-01-23T12:34:56.789012+03:00')
+    return constants.NOW
 
 
 @pytest.fixture(autouse=True)
@@ -45,7 +44,7 @@ def email_service(settings) -> type[MockEmailService]:
 
 @pytest.fixture(autouse=True)
 def registration_code():
-    return '1234567890'
+    return constants.NEW_REGISTRATION_CODE
 
 
 @pytest.fixture(autouse=True)

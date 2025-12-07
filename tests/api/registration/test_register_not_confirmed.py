@@ -4,70 +4,65 @@
 
 import freezegun
 import pytest
-from rest_framework import status
 
 from app.accounts.models import User, Registration
+from . import constants
+from ._base import UserRegistrationTestBase
 
 pytestmark = pytest.mark.django_db
 
 
-@pytest.fixture
-def data(now, email='user1@example.org', password='P@ssw0rd') -> dict:
-    user = User.objects.filter(email=email).first()
-    assert user is not None
-    assert not user.check_password(password)
-    assert not user.has_verified_email
-    assert user.is_active
-    assert user.created_at != now
-    return {
-        'email': email,
-        'password': password,
-        'password_confirmation': password,
-    }
+class NotConfirmedUserTestBase(UserRegistrationTestBase):
+    @pytest.fixture
+    def data(self, now, user, password='P@ssw0rd') -> dict:
+        assert user.is_active
+        assert not user.has_verified_email
+        assert not user.check_password(password)
+        assert user.created_at != now
+        return {
+            'email': user.email,
+            'password': password,
+            'password_confirmation': password,
+        }
 
-
-def test_it_returns_200(client, url, data):
-    response = client.post(url, data=data, content_type='application/json')
-    assert response.status_code == status.HTTP_200_OK
-
-
-def test_it_returns_no_data(client, url, data):
-    response = client.post(url, data=data, content_type='application/json')
-    assert response.data is None
-
-
-def test_it_does_not_creates_user(client, url, data):
-    users_count = User.objects.count()
-    client.post(url, data=data, content_type='application/json')
-    assert User.objects.count() == users_count
-
-
-def test_user_attributes(client, url, data, now):
-    """
-    Процедура регистрации не обновляет атрибуты, кроме пароля
-    """
-    with freezegun.freeze_time(now):
+    @pytest.mark.django_db(transaction=True)
+    def test_it_sends_registration_email(self, client, url, data, email_service, registration_code):
         client.post(url, data=data, content_type='application/json')
-    user = User.objects.get(email=data['email'])
-    assert user.is_active
-    assert not user.has_verified_email
-    assert user.created_at != now
-    assert user.check_password(data['password'])
+        assert email_service.success_emails == [(data['email'], registration_code)]
 
-
-@pytest.mark.django_db(transaction=True)
-def test_it_sends_registration_email(client, url, data, email_service, registration_code_service, registration_code):
-    client.post(url, data=data, content_type='application/json')
-    assert email_service.success_emails == [(data['email'], registration_code)]
-
-
-def test_it_create_registration_record(client, url, data, registration_code, now):
-    assert not Registration.objects.filter(code=registration_code).exists()
-
-    with freezegun.freeze_time(now):
+    def test_it_does_not_creates_user(self, client, url, data):
+        users_count = User.objects.count()
         client.post(url, data=data, content_type='application/json')
-    registration_record = Registration.objects.filter(code=registration_code).first()
-    assert registration_record is not None
-    assert registration_record.user.email == data['email']
-    assert registration_record.code == registration_code
-    assert registration_record.created_at == now
+        assert User.objects.count() == users_count
+
+    def test_sets_does_not_modifies_created_at(self, client, url, data, now):
+        user = User.objects.get(email=data['email'])
+        previous_created_at_value = user.created_at
+        with freezegun.freeze_time(now):
+            client.post(url, data=data, content_type='application/json')
+        user.refresh_from_db()
+        assert user.created_at == previous_created_at_value
+
+
+class TestUserHaveNoRegistrationRecord(NotConfirmedUserTestBase):
+    @pytest.fixture
+    def user(self):
+        u = User.objects.get(email=constants.USER_1_EMAIL)
+        assert not Registration.objects.filter(user=u).exists()
+        return u
+
+
+class TestUserHaveRegistrationRecord(NotConfirmedUserTestBase):
+    @pytest.fixture
+    def user(self):
+        return User.objects.get(email=constants.USER_2_EMAIL)
+
+    @pytest.fixture
+    def existing_registration_id(self, user):
+        registration = Registration.objects.get(user=user)
+        assert registration.code == constants.USER_1_REGISTRATION_CODE
+        return registration.id
+
+    def test_it_removes_old_registration_record(self, client, url, data, existing_registration_id, now):
+        client.post(url, data=data, content_type='application/json')
+        assert not Registration.objects.filter(id=existing_registration_id).exists()
