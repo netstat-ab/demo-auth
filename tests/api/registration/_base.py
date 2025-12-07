@@ -6,6 +6,10 @@ from app.accounts.models import User, Registration
 
 
 class CommonUserRegistrationTestBase:
+    """
+    Базовый класс проверки регистрации, включающий тестирование общего поведения сценариев запроса регистрации
+    """
+
     def test_it_returns_200(self, client, url, data):
         """Всегда возвращается ответ 200"""
         response = client.post(url, data=data, content_type='application/json')
@@ -19,7 +23,8 @@ class CommonUserRegistrationTestBase:
 
 class SuccessUserRegistrationTestBase(CommonUserRegistrationTestBase):
     """
-    Базовый класс проверки регистрации, включающий тестирование общего поведения сценариев регистрации
+    Базовый класс проверки регистрации, включающий тестирование общего поведения сценариев запроса регистрации
+    с успешным исходом (исключается случай, когда почтовый адрес уже зарегистрирован)
     """
 
     def test_user_attributes(self, client, url, data):

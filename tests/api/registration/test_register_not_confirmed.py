@@ -63,5 +63,8 @@ class TestUserHaveRegistrationRecord(NotConfirmedUserTestBase):
         return registration.id
 
     def test_it_removes_old_registration_record(self, client, url, data, existing_registration_id, now):
+        """
+        Предыдущий блок данных регистрации удаляется
+        """
         client.post(url, data=data, content_type='application/json')
         assert not Registration.objects.filter(id=existing_registration_id).exists()
