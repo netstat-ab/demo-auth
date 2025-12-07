@@ -7,12 +7,12 @@ import pytest
 
 from app.accounts.models import User, Registration
 from . import constants
-from ._base import UserRegistrationTestBase
+from ._base import SuccessUserRegistrationTestBase
 
 pytestmark = pytest.mark.django_db
 
 
-class NotConfirmedUserTestBase(UserRegistrationTestBase):
+class NotConfirmedUserTestBase(SuccessUserRegistrationTestBase):
     @pytest.fixture
     def data(self, now, user, password='P@ssw0rd') -> dict:
         assert not user.has_verified_email

@@ -242,6 +242,17 @@
     }
   },
   {
+    "model": "accounts.user",
+    "pk": 3,
+    "fields": {
+      "password": "pbkdf2_sha256$600000$u7W2tK5v2HWu2FfuN3WzKB$gcEWIBTho6Y7YKVS8ADnNJED19yxMGeYs30Tp0+wTVQ=",
+      "last_login": "2025-08-06T14:40:19.347Z",
+      "email": "user3@example.org",
+      "has_verified_email": true,
+      "created_at": "2025-12-07T12:19:30.978Z"
+    }
+  },
+  {
     "model": "accounts.registration",
     "pk": 1,
     "fields": {

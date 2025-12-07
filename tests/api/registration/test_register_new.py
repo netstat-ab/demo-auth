@@ -5,12 +5,12 @@ import pytest
 
 from app.accounts.models import User
 from . import constants
-from ._base import UserRegistrationTestBase
+from ._base import SuccessUserRegistrationTestBase
 
 pytestmark = pytest.mark.django_db
 
 
-class TestNotExistingUser(UserRegistrationTestBase):
+class TestNotExistingUser(SuccessUserRegistrationTestBase):
     @pytest.fixture
     def data(self, password='P@ssw0rd') -> dict:
         assert not User.objects.filter(email=constants.NOT_EXISTING_USER_EMAIL).exists()

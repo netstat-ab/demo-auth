@@ -5,11 +5,7 @@ from rest_framework import status
 from app.accounts.models import User, Registration
 
 
-class UserRegistrationTestBase:
-    """
-    Базовый класс проверки регистрации, включающий тестирование общего поведения сценариев регистрации
-    """
-
+class CommonUserRegistrationTestBase:
     def test_it_returns_200(self, client, url, data):
         """Всегда возвращается ответ 200"""
         response = client.post(url, data=data, content_type='application/json')
@@ -19,6 +15,12 @@ class UserRegistrationTestBase:
         """Всегда в ответе отсутствуют данные"""
         response = client.post(url, data=data, content_type='application/json')
         assert response.data is None
+
+
+class SuccessUserRegistrationTestBase(CommonUserRegistrationTestBase):
+    """
+    Базовый класс проверки регистрации, включающий тестирование общего поведения сценариев регистрации
+    """
 
     def test_user_attributes(self, client, url, data):
         """Проверка корректности установки атрибутов, общих для всех сценариев"""
@@ -33,7 +35,7 @@ class UserRegistrationTestBase:
         client.post(url, data=data, content_type='application/json')
         assert email_service.success_emails == [(data['email'], registration_code)]
 
-    def test_it_create_registration_record(self, client, url, data, registration_code, now):
+    def test_it_creates_registration_record(self, client, url, data, registration_code, now):
         """Создается новая запись о регистрации"""
         assert not Registration.objects.filter(code=registration_code).exists()
 
