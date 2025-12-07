@@ -2,8 +2,8 @@ import pytest
 from django.urls import reverse
 from rest_framework.test import APIClient
 
-from tests.mocks.email import MockEventsService
-from tests.mocks.registration_code import MockRegistrationCodeService
+from tests.mocks.broker import MockMessageBroker
+from tests.mocks.registration_code import MockRegistrationCodeGenerator
 from . import constants
 
 
@@ -36,10 +36,10 @@ def configure_password_policy(settings, password_min_length, password_max_length
 
 
 @pytest.fixture(autouse=True)
-def email_service(settings) -> type[MockEventsService]:
-    settings.EMAIL_SERVICE_ADAPTER = {'path': 'tests.mocks.email.MockEventsService'}
-    MockEventsService.cleanup()
-    return MockEventsService
+def message_broker(settings) -> type[MockMessageBroker]:
+    settings.MESSAGE_BROKER_CONFIG = {'path': 'tests.mocks.broker.MockMessageBroker'}
+    MockMessageBroker.cleanup()
+    return MockMessageBroker
 
 
 @pytest.fixture(autouse=True)
@@ -49,11 +49,11 @@ def registration_code():
 
 @pytest.fixture(autouse=True)
 def registration_code_service(settings, registration_code):
-    settings.REGISTRATION_CODE_SERVICE_ADAPTER = {
-        'path': 'tests.mocks.registration_code.MockRegistrationCodeService',
+    settings.REGISTRATION_CODE_GENERATOR_CONFIG = {
+        'path': 'tests.mocks.registration_code.MockRegistrationCodeGenerator',
         'args': [registration_code]
     }
-    return MockRegistrationCodeService
+    return MockRegistrationCodeGenerator
 
 
 @pytest.fixture

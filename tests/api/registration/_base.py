@@ -35,10 +35,10 @@ class SuccessUserRegistrationTestBase(CommonUserRegistrationTestBase):
         assert user.check_password(data['password'])
 
     @pytest.mark.django_db(transaction=True)
-    def test_it_sends_registration_email(self, client, url, data, email_service, registration_code):
+    def test_it_triggers_success_event(self, client, url, data, message_broker, registration_code):
         """Отправляется почтовое уведомление об успешной регистрации"""
         client.post(url, data=data, content_type='application/json')
-        assert email_service.success_emails == [(data['email'], registration_code)]
+        assert message_broker.success_registrations == [(data['email'], registration_code)]
 
     def test_it_creates_registration_record(self, client, url, data, registration_code, now):
         """Создается новая запись о регистрации"""

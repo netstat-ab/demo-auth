@@ -1,7 +1,7 @@
-from app.services.registration_code import RegistrationCodeService
+from app.services.registration_code import RegistrationCodeGenerator
 
 
-class MockRegistrationCodeService(RegistrationCodeService):
+class MockRegistrationCodeGenerator(RegistrationCodeGenerator):
     def __init__(self, code):
         self.code = code
 

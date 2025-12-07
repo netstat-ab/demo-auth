@@ -11,8 +11,8 @@ env = environ.Env(
     DJANGO_ALLOWED_HOSTS=(list, ['localhost']),
     DJANGO_DATABASE_URL=(str, 'psql://postgres:postgres@auth-db:5432/auth'),
     DJANGO_TIME_ZONE=(str, 'Europe/Moscow'),
-    EMAIL_SERVICE_ADAPTER_PATH=(str, 'app.services.KafkaEmail'),
-    REGISTRATION_CODE_SERVICE_ADAPTER_PATH=(str, 'app.services.SecureRegistrationCodeServiceAdapter'),
+    MESSAGE_BROKER_ADAPTER_PATH=(str, 'app.services.broker.MessageBrokerImpl'),
+    REGISTRATION_CODE_GENERATOR_ADAPTER_PATH=(str, 'app.services.RegistrationCodeGeneratorImpl'),
     REGISTRATION_CODE_LENGTH=(int, 32),
     PASSWORD_POLICY_MIN_LENGTH=(int, 8),
     PASSWORD_POLICY_MAX_LENGTH=(int, 20),
@@ -27,10 +27,8 @@ DEBUG = env('DJANGO_DEBUG')
 ALLOWED_HOSTS = env('DJANGO_ALLOWED_HOSTS')
 
 INSTALLED_APPS = [
-    # 'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
-    # 'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
     'app.accounts',
@@ -40,7 +38,7 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     # 'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    # 'django.middleware.csrf.CsrfViewMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
     # 'django.contrib.auth.middleware.AuthenticationMiddleware',
     # 'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -111,6 +109,9 @@ LOGGING = {
     },
 }
 
-EMAIL_SERVICE_ADAPTER = {'path': env('EMAIL_SERVICE_ADAPTER_PATH')}
-REGISTRATION_CODE_SERVICE_ADAPTER = {'path': env('REGISTRATION_CODE_SERVICE_ADAPTER_PATH')}
-REGISTRATION_CODE_LENGTH = env('REGISTRATION_CODE_LENGTH')
+MESSAGE_BROKER_CONFIG = {'path': env('MESSAGE_BROKER_ADAPTER_PATH')}
+
+REGISTRATION_CODE_GENERATOR_CONFIG = {
+    'path': env('REGISTRATION_CODE_GENERATOR_ADAPTER_PATH'),
+    'code_length': env('REGISTRATION_CODE_LENGTH'),
+}

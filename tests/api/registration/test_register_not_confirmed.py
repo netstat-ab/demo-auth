@@ -25,9 +25,9 @@ class NotConfirmedUserTestBase(SuccessUserRegistrationTestBase):
         }
 
     @pytest.mark.django_db(transaction=True)
-    def test_it_sends_registration_email(self, client, url, data, email_service, registration_code):
+    def test_it_triggers_success_registration_event(self, client, url, data, message_broker, registration_code):
         client.post(url, data=data, content_type='application/json')
-        assert email_service.success_emails == [(data['email'], registration_code)]
+        assert message_broker.success_registrations == [(data['email'], registration_code)]
 
     def test_it_does_not_creates_user(self, client, url, data):
         users_count = User.objects.count()

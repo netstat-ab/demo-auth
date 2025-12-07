@@ -8,7 +8,7 @@ from django.db import transaction
 from django.db.transaction import atomic
 
 from app.accounts.models import User, Registration
-from app.services.event import EventsService
+from app.services.broker import MessageBroker
 from app.services.registration_code import generate_registration_code
 
 
@@ -42,13 +42,13 @@ class RegisterUser:
 
         Registration.objects.create(user=user, code=code)
 
-        email_service: EventsService = EventsService.get_instance()
+        message_broker: MessageBroker = MessageBroker.get_instance()
         transaction.on_commit(
-            partial(email_service.registration_success, self.email, code),
+            partial(message_broker.registration_success, self.email, code),
         )
 
     def _complete_with_warning(self):
-        email_service: EventsService = EventsService.get_instance()
+        message_broker: MessageBroker = MessageBroker.get_instance()
         transaction.on_commit(
-            partial(email_service.registration_warning, self.email),
+            partial(message_broker.registration_warning, self.email),
         )

@@ -46,7 +46,7 @@ class TestExistingUser(CommonUserRegistrationTestBase):
         assert not Registration.objects.filter(user=user).exists()
 
     @pytest.mark.django_db(transaction=True)
-    def test_it_sends_warning_email(self, client, url, data, email_service):
+    def test_it_triggers_registration_with_warning_event(self, client, url, data, message_broker):
         """Отправляется почтовое уведомление о повторной попытке регистрации на данный адрес"""
         client.post(url, data=data, content_type='application/json')
-        assert email_service.warning_emails == [(data['email'])]
+        assert message_broker.warning_registrations == [(data['email'])]
