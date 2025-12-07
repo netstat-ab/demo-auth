@@ -2,9 +2,8 @@ from app.services.email import EmailService
 
 
 class MockEmailService(EmailService):
-    def __init__(self):
-        self.success_emails = []
-        self.warning_emails = []
+    success_emails = []
+    warning_emails = []
 
     def send(self, subject: str, recipients: list[str], body: str, content_type='text/plain'):
         raise NotImplementedError()
@@ -14,3 +13,8 @@ class MockEmailService(EmailService):
 
     def send_registration_warning(self, recipient: str):
         self.warning_emails.append(recipient)
+
+    @classmethod
+    def cleanup(cls):
+        cls.success_emails = []
+        cls.warning_emails = []

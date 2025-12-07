@@ -1,3 +1,5 @@
+"""Тестирование политик требований к сложности пароля"""
+
 import string
 from functools import partial
 
@@ -55,6 +57,8 @@ def do_post(client, url):
 
 
 def test_min_length_policy(do_post, data, configure_password_policy):
+    """Тестирование требования минимальной длины пароля"""
+
     configure_password_policy(MIN_LENGTH, MAX_LENGTH)
 
     password = 'Aa1!sS2@'
@@ -69,6 +73,8 @@ def test_min_length_policy(do_post, data, configure_password_policy):
 
 
 def test_max_length_policy(do_post, data, configure_password_policy):
+    """Тестирование требования максимальной длины пароля"""
+
     configure_password_policy(MIN_LENGTH, MAX_LENGTH)
 
     password = 'P@ssw0rd12'
@@ -84,6 +90,8 @@ def test_max_length_policy(do_post, data, configure_password_policy):
 
 @pytest.mark.parametrize('disallowed_char', '`<б[{')
 def test_allowed_chars_policy(do_post, data, configure_password_policy, disallowed_char):
+    """Тестирование требования разрешенных символов в пароле"""
+
     all_allowed_chars = string.ascii_letters + string.digits + '.,!@#$%^&*-_=+'
     configure_password_policy(MIN_LENGTH, len(all_allowed_chars) + 10)
 
@@ -98,6 +106,8 @@ def test_allowed_chars_policy(do_post, data, configure_password_policy, disallow
 
 @pytest.mark.parametrize('bad_password', ('p@s1', 'P2s1', 'P@S1', 'P@s!'))
 def test_required_chars_policy(do_post, data, configure_password_policy, bad_password):
+    """Тестирование требования неободимых символов в пароле"""
+
     configure_password_policy(4, MAX_LENGTH)
     response = do_post(data=data(password='P@s1'))
     assert response.status_code == status.HTTP_200_OK

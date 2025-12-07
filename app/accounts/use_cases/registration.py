@@ -5,6 +5,7 @@ __all__ = [
 from functools import partial
 
 from django.db import transaction
+from django.db.transaction import atomic
 
 from app.accounts.models import User, Registration
 from app.services.email import EmailService
@@ -21,16 +22,17 @@ class RegisterUser:
         self.password = password
 
     def execute(self) -> User:
-        user, created = User.objects.get_or_create(email=self.email)
+        with atomic():
+            user, created = User.objects.get_or_create(email=self.email)
 
-        if not user.is_active or user.has_verified_email:
-            self._complete_with_warning()
-        else:
-            if not created:
-                Registration.objects.filter(user=user).delete()
-            self._complete_with_success(user)
+            if not user.is_active or user.has_verified_email:
+                self._complete_with_warning()
+            else:
+                if not created:
+                    Registration.objects.filter(user=user).delete()
+                self._complete_with_success(user)
 
-        return user
+            return user
 
     def _complete_with_success(self, user: User):
         user.set_password(self.password)

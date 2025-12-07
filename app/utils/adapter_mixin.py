@@ -41,6 +41,4 @@ class AdapterMixin:
 
         args = config.get('args', ())
         kwargs = config.get('kwargs', {})
-
-        print(args, kwargs)
         return adapter_class(*args, **kwargs)

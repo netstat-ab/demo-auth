@@ -1,3 +1,5 @@
+"""Тестирование некорректных запросов, ошибки 400"""
+
 from functools import partial
 
 import pytest
@@ -50,6 +52,9 @@ def do_post(client, url):
     ]
 )
 def test_invalid_field(do_post, data, field, value, expected_error):
+    """
+    Есть недостающие поля или поля неправильного формата.
+    """
     if value is empty:
         data.pop(field)
     else:
@@ -60,6 +65,9 @@ def test_invalid_field(do_post, data, field, value, expected_error):
 
 
 def test_password_mismatch(do_post):
+    """
+    Пароль не совпадает с подтверждением пароля
+    """
     response = do_post(data={
         'email': 'valid@example.com',
         'password': 'P@ssw0rd',
