@@ -8,7 +8,7 @@ __all__ = [
 
 import abc
 import re
-from app.constants import text
+from app import constants
 
 from django.conf import settings
 
@@ -36,7 +36,7 @@ class PasswordPolicy(abc.ABC):
 class PasswordMinimumLengthPolicy(PasswordPolicy):
     @property
     def error_description(self):
-        return text.PASSWORD_TOO_SHORT % settings.PASSWORD_POLICY['min_length']
+        return constants.PASSWORD_TOO_SHORT % settings.PASSWORD_POLICY['min_length']
 
     def _password_is_valid(self) -> bool:
         return len(self.password) >= settings.PASSWORD_POLICY['min_length']
@@ -45,14 +45,14 @@ class PasswordMinimumLengthPolicy(PasswordPolicy):
 class PasswordMaximumLengthPolicy(PasswordPolicy):
     @property
     def error_description(self):
-        return text.PASSWORD_TOO_LONG % settings.PASSWORD_POLICY['max_length']
+        return constants.PASSWORD_TOO_LONG % settings.PASSWORD_POLICY['max_length']
 
     def _password_is_valid(self) -> bool:
         return len(self.password) <= settings.PASSWORD_POLICY['max_length']
 
 
 class PasswordAllowedCharsPolicy(PasswordPolicy):
-    error_description = text.PASSWORD_CONTAINS_PROHIBITED_CHARACTERS
+    error_description = constants.PASSWORD_CONTAINS_PROHIBITED_CHARACTERS
     chars_regex = re.compile(r'^[a-zA-Z0-9.,!@#$%^&*\-_=+]*$')
 
     def _password_is_valid(self) -> bool:
@@ -60,7 +60,7 @@ class PasswordAllowedCharsPolicy(PasswordPolicy):
 
 
 class PasswordRequiredCharsPolicy(PasswordPolicy):
-    error_description = text.PASSWORD_DOES_NOT_CONTAIN_ALL_REQUIRED_CHARACTERS
+    error_description = constants.PASSWORD_DOES_NOT_CONTAIN_ALL_REQUIRED_CHARACTERS
 
     def _password_is_valid(self) -> bool:
         return (

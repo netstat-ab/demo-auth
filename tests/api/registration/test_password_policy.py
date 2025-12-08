@@ -6,7 +6,7 @@ from functools import partial
 import pytest
 from rest_framework import status
 
-from app.constants import text
+from app import constants
 
 pytestmark = pytest.mark.django_db
 
@@ -54,7 +54,7 @@ def test_min_length_policy(do_post, data, configure_password_policy):
     password = password[:-1]
     response = do_post(data=data(password))
     assert response.status_code == status.HTTP_400_BAD_REQUEST
-    assert response.json() == {'password': [text.PASSWORD_TOO_SHORT % MIN_LENGTH]}
+    assert response.json() == {'password': [constants.PASSWORD_TOO_SHORT % MIN_LENGTH]}
 
 
 def test_max_length_policy(do_post, data, configure_password_policy):
@@ -70,7 +70,7 @@ def test_max_length_policy(do_post, data, configure_password_policy):
     password += '1'
     response = do_post(data=data(password))
     assert response.status_code == status.HTTP_400_BAD_REQUEST
-    assert response.json() == {'password': [text.PASSWORD_TOO_LONG % MAX_LENGTH]}
+    assert response.json() == {'password': [constants.PASSWORD_TOO_LONG % MAX_LENGTH]}
 
 
 @pytest.mark.parametrize('disallowed_char', '`<б[{')
@@ -86,7 +86,7 @@ def test_allowed_chars_policy(do_post, data, configure_password_policy, disallow
     password = all_allowed_chars + disallowed_char
     response = do_post(data=data(password))
     assert response.status_code == status.HTTP_400_BAD_REQUEST
-    assert response.json() == {'password': [text.PASSWORD_CONTAINS_PROHIBITED_CHARACTERS]}
+    assert response.json() == {'password': [constants.PASSWORD_CONTAINS_PROHIBITED_CHARACTERS]}
 
 
 @pytest.mark.parametrize('bad_password', ('p@s1', 'P2s1', 'P@S1', 'P@s!'))
@@ -99,4 +99,4 @@ def test_required_chars_policy(do_post, data, configure_password_policy, bad_pas
 
     response = do_post(data=data(password=bad_password))
     assert response.status_code == status.HTTP_400_BAD_REQUEST
-    assert response.json() == {'password': [text.PASSWORD_DOES_NOT_CONTAIN_ALL_REQUIRED_CHARACTERS]}
+    assert response.json() == {'password': [constants.PASSWORD_DOES_NOT_CONTAIN_ALL_REQUIRED_CHARACTERS]}
