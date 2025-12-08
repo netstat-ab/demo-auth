@@ -3,14 +3,14 @@ from django.utils.translation import gettext_lazy as _
 from rest_framework import viewsets, decorators, serializers, status
 from rest_framework.response import Response
 
-from app.accounts.password_policies import (
+from app.password_policies import (
     PasswordMinimumLengthPolicy,
     PasswordMaximumLengthPolicy,
     PasswordAllowedCharsPolicy,
     PasswordRequiredCharsPolicy,
     PasswordPolicyError,
 )
-from app.accounts.use_cases import register_user
+from app.use_cases import register_user
 
 
 class RegisterSerializer(serializers.Serializer):

@@ -2,7 +2,7 @@ import freezegun
 import pytest
 from rest_framework import status
 
-from app.accounts.models import User, Registration
+from app.models import User, Registration
 
 
 class CommonUserRegistrationTestBase:

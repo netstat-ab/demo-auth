@@ -207,7 +207,7 @@
     "model": "contenttypes.contenttype",
     "pk": 4,
     "fields": {
-      "app_label": "accounts",
+      "app_label": "app",
       "model": "user"
     }
   },
@@ -215,12 +215,12 @@
     "model": "contenttypes.contenttype",
     "pk": 5,
     "fields": {
-      "app_label": "accounts",
+      "app_label": "app",
       "model": "registration"
     }
   },
   {
-    "model": "accounts.user",
+    "model": "app.user",
     "pk": 1,
     "fields": {
       "password": "pbkdf2_sha256$600000$BQlfZ4HDMsZD2lOA6bSCA9$55/HOBGVcsLc3C++4b/tR4w9IvpwBCuCQ1d4h4dzClw=",
@@ -231,7 +231,7 @@
     }
   },
   {
-    "model": "accounts.user",
+    "model": "app.user",
     "pk": 2,
     "fields": {
       "password": "pbkdf2_sha256$600000$RZQoQBiGgMZAsfVboKbVZx$vu7Mq9qW4A2abWBWlDdxA8tAYuJBWKvasrMJ8BDhaXg=",
@@ -242,7 +242,7 @@
     }
   },
   {
-    "model": "accounts.user",
+    "model": "app.user",
     "pk": 3,
     "fields": {
       "password": "pbkdf2_sha256$600000$u7W2tK5v2HWu2FfuN3WzKB$gcEWIBTho6Y7YKVS8ADnNJED19yxMGeYs30Tp0+wTVQ=",
@@ -253,7 +253,7 @@
     }
   },
   {
-    "model": "accounts.registration",
+    "model": "app.registration",
     "pk": 1,
     "fields": {
       "user": 2,

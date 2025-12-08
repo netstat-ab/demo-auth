@@ -3,7 +3,7 @@
 import freezegun
 import pytest
 
-from app.accounts.models import User
+from app.models import User
 from . import constants
 from ._base import SuccessUserRegistrationTestBase
 

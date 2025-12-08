@@ -7,7 +7,7 @@ from functools import partial
 from django.db import transaction
 from django.db.transaction import atomic
 
-from app.accounts.models import User, Registration
+from app.models import User, Registration
 from app.services.broker import MessageBroker
 from app.services.registration_code import generate_registration_code
 

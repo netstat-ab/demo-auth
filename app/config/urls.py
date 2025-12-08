@@ -1,4 +1,4 @@
-from app.accounts.api import UserViewSet
+from app.api import UserViewSet
 from rest_framework import routers
 
 
