@@ -1,7 +1,8 @@
-from django.db.transaction import atomic
+__all__ = ['RegisterSerializer', 'VerifyEmailSerializer']
+
+from django.conf import settings
 from django.utils.translation import gettext_lazy as _
-from rest_framework import viewsets, decorators, serializers, status
-from rest_framework.response import Response
+from rest_framework import serializers
 
 from app.password_policies import (
     PasswordMinimumLengthPolicy,
@@ -10,7 +11,6 @@ from app.password_policies import (
     PasswordRequiredCharsPolicy,
     PasswordPolicyError,
 )
-from app.use_cases import register_user
 
 
 class RegisterSerializer(serializers.Serializer):
@@ -42,28 +42,6 @@ class RegisterSerializer(serializers.Serializer):
             raise serializers.ValidationError(_('Passwords do not match.'))
         return attrs
 
-# TODO: password too week
 
-# TODO:
-#  register
-#  confirm_email
-#  login (get access token + refresh token)
-#  refresh access token
-#  refresh refresh token
-#  logout (revoke access token + revoke access token)
-#  update password
-#  recover password
-class UserViewSet(viewsets.ViewSet):
-    @decorators.action(methods=['POST'], detail=False)
-    @atomic
-    def register(self, request):
-        if request.user.is_authenticated:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-
-        serializer = RegisterSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        data = serializer.validated_data
-
-        register_user(email=data['email'], password=data['password'])
-
-        return Response(status=status.HTTP_200_OK)
+class VerifyEmailSerializer(serializers.Serializer):
+    code = serializers.CharField(max_length=settings.REGISTRATION_CODE_LENGTH)

@@ -24,9 +24,7 @@ class AdapterMixin:
 
     @classmethod
     def get_instance(cls):
-        config = getattr(settings, cls.adapter_config, None)
-        assert isinstance(config, dict)
-
+        config = cls._get_config()
         path = config.get('path')
         assert isinstance(path, str)
 
@@ -42,3 +40,9 @@ class AdapterMixin:
         args = config.get('args', ())
         kwargs = config.get('kwargs', {})
         return adapter_class(*args, **kwargs)
+
+    @classmethod
+    def _get_config(cls) -> dict:
+        config = getattr(settings, cls.adapter_config, None)
+        assert isinstance(config, dict)
+        return config

@@ -40,14 +40,15 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     # 'django.contrib.auth.middleware.AuthenticationMiddleware',
-    # 'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
 ROOT_URLCONF = 'app.config.urls'
 
-TEMPLATES = [
-    {
+TEMPLATES = []
+
+if DEBUG:
+    TEMPLATES.append({
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [],
         'APP_DIRS': True,
@@ -55,12 +56,9 @@ TEMPLATES = [
             'context_processors': [
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',
-                'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
             ],
         },
-    },
-]
+    })
 
 WSGI_APPLICATION = 'app.config.wsgi.application'
 
@@ -111,7 +109,6 @@ LOGGING = {
 
 MESSAGE_BROKER_CONFIG = {'path': env('MESSAGE_BROKER_ADAPTER_PATH')}
 
-REGISTRATION_CODE_GENERATOR_CONFIG = {
-    'path': env('REGISTRATION_CODE_GENERATOR_ADAPTER_PATH'),
-    'code_length': env('REGISTRATION_CODE_LENGTH'),
-}
+REGISTRATION_CODE_GENERATOR_CONFIG = {'path': env('REGISTRATION_CODE_GENERATOR_ADAPTER_PATH')}
+
+REGISTRATION_CODE_LENGTH = env('REGISTRATION_CODE_LENGTH')

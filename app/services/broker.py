@@ -2,6 +2,7 @@ __all__ = ['MessageBroker', 'MessageBrokerError']
 
 import abc
 
+from app.models import User
 from app.utils import AdapterMixin
 
 
@@ -20,10 +21,17 @@ class MessageBroker(AdapterMixin, abc.ABC):
     def registration_warning(self, recipient: str):
         ...
 
+    @abc.abstractmethod
+    def email_verified(self, user: User):
+        ...
+
 
 class MessageBrokerImpl(MessageBroker):
     def registration_success(self, recipient: str, registration_code: str):
         raise NotImplementedError
 
     def registration_warning(self, recipient: str):
+        raise NotImplementedError
+
+    def email_verified(self, user):
         raise NotImplementedError
