@@ -2,9 +2,11 @@ from datetime import datetime
 
 PASSWORD_POLICY_MIN_LENGTH = 8
 PASSWORD_POLICY_MAX_LENGTH = 10
+REGISTRATION_CODE_LENGTH = 16
+
 
 # Код регистрации, отсутствующий в базе
-NEW_REGISTRATION_CODE = 'NEW_REGISTRATION_CODE'
+NEW_REGISTRATION_CODE = 'REGISTRATION1234'
 
 # Код регистрации, привязанный к пользователю с адресом электронной почты USER_2_EMAIL
 USER_2_REGISTRATION_CODE = 'USER_2_REGISTRATION_CODE'

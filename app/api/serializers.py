@@ -1,9 +1,9 @@
 __all__ = ['RegisterSerializer', 'VerifyEmailSerializer']
 
-from django.conf import settings
 from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
 
+from app.models import Registration
 from app.password_policies import (
     PasswordMinimumLengthPolicy,
     PasswordMaximumLengthPolicy,
@@ -44,4 +44,4 @@ class RegisterSerializer(serializers.Serializer):
 
 
 class VerifyEmailSerializer(serializers.Serializer):
-    code = serializers.CharField(max_length=settings.REGISTRATION_CODE_LENGTH)
+    code = serializers.CharField(max_length=Registration.MAX_CODE_LENGTH)

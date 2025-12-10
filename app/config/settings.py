@@ -111,4 +111,5 @@ MESSAGE_BROKER_CONFIG = {'path': env('MESSAGE_BROKER_ADAPTER_PATH')}
 
 REGISTRATION_CODE_GENERATOR_CONFIG = {'path': env('REGISTRATION_CODE_GENERATOR_ADAPTER_PATH')}
 
+# Количество символов в коде регистрации. Влияет только на генерацию кодов, для самотестирования
 REGISTRATION_CODE_LENGTH = env('REGISTRATION_CODE_LENGTH')

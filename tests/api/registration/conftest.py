@@ -1,15 +1,8 @@
 import pytest
 from django.urls import reverse
-from rest_framework.test import APIClient
 
 from tests.api import constants
-from tests.mocks.broker import MockMessageBroker
 from tests.mocks.registration_code import MockRegistrationCodeGenerator
-
-
-@pytest.fixture
-def client():
-    return APIClient()
 
 
 @pytest.fixture(autouse=True)
@@ -22,9 +15,9 @@ def password_max_length():
     return constants.PASSWORD_POLICY_MAX_LENGTH
 
 
-@pytest.fixture
-def now():
-    return constants.NOW
+@pytest.fixture(autouse=True)
+def registration_code_length():
+    return constants.REGISTRATION_CODE_LENGTH
 
 
 @pytest.fixture(autouse=True)
@@ -36,10 +29,8 @@ def configure_password_policy(settings, password_min_length, password_max_length
 
 
 @pytest.fixture(autouse=True)
-def message_broker(settings) -> type[MockMessageBroker]:
-    settings.MESSAGE_BROKER_CONFIG = {'path': 'tests.mocks.broker.MockMessageBroker'}
-    MockMessageBroker.cleanup()
-    return MockMessageBroker
+def configure_registration_code_length(settings, registration_code_length):
+    settings.REGISTRATION_CODE_LENGTH = registration_code_length
 
 
 @pytest.fixture(autouse=True)

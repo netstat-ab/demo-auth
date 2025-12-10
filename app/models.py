@@ -17,11 +17,13 @@ class User(AbstractBaseUser):
 
 
 class Registration(models.Model):
+    MAX_CODE_LENGTH = 255
+
     user = models.OneToOneField(
         to=User,
         on_delete=models.SET_NULL,
         null=True,
         related_name='+',
     )
-    code = models.CharField(max_length=255, unique=True)
+    code = models.CharField(max_length=MAX_CODE_LENGTH, unique=True)
     created_at = models.DateTimeField(auto_now_add=True)

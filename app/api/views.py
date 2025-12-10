@@ -30,7 +30,7 @@ class UserViewSet(viewsets.ViewSet):
 
         return Response(status=status.HTTP_200_OK)
 
-    @decorators.action(methods=['POST'], detail=False)
+    @decorators.action(methods=['GET'], detail=False)
     @atomic
     def verify(self, request):
         if request.user.is_authenticated:
