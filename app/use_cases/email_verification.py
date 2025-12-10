@@ -29,4 +29,9 @@ def verify_email(code) -> None:
         transaction.on_commit(
             partial(message_broker.email_verified, registration.user)
         )
+
+        user = registration.user
+        user.has_verified_email = True
+        user.save()
+
         Registration.objects.filter(pk=registration.pk).delete()

@@ -11,6 +11,9 @@ NEW_REGISTRATION_CODE = 'REGISTRATION1234'
 # Код регистрации, привязанный к пользователю с адресом электронной почты USER_2_EMAIL
 USER_2_REGISTRATION_CODE = 'USER_2_REGISTRATION_CODE'
 
+# Код регистрации, привязанный к пользователю с адресом электронной почты USER_4_EMAIL
+USER_4_REGISTRATION_CODE = 'USER_4_REGISTRATION_CODE'
+
 # Текущее время для freezetime
 NOW = datetime.fromisoformat('2025-10-23T12:34:56.789012+03:00')
 
@@ -25,3 +28,7 @@ USER_2_EMAIL = 'user2@example.org'
 
 # email существующего пользователя, с подтвержденным адресом электронной почты
 USER_3_EMAIL = 'user3@example.org'
+
+# email существующего пользователя, с подтвержденным адресом электронной почты.
+# По какой-то причине существует так же и код регистрации
+USER_4_EMAIL = 'user4@example.org'

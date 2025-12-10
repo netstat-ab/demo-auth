@@ -43,7 +43,7 @@ class UserViewSet(viewsets.ViewSet):
         try:
             verify_email(code=data['code'])
         except EmailVerificationError:
-            data = {'status': 'failed', 'details': {'reason', 'invalid_code'}}
+            data = {'status': 'failed', 'details': {'reason': 'invalid_code'}}
         else:
             data = {'status': 'success'}
 

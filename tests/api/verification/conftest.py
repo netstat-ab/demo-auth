@@ -1,3 +1,5 @@
+from functools import partial
+
 import pytest
 from django.urls import reverse
 
@@ -5,3 +7,8 @@ from django.urls import reverse
 @pytest.fixture
 def url():
     return reverse('user-verify')
+
+
+@pytest.fixture
+def do_get(client, url):
+    return partial(client.get, url, content_type='application/json')
