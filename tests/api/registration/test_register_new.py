@@ -4,7 +4,7 @@ import freezegun
 import pytest
 
 from app.models import User
-from . import constants
+from tests.api import constants
 from ._base import SuccessUserRegistrationTestBase
 
 pytestmark = pytest.mark.django_db

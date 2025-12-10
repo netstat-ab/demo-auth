@@ -2,9 +2,9 @@ import pytest
 from django.urls import reverse
 from rest_framework.test import APIClient
 
+from tests.api import constants
 from tests.mocks.broker import MockMessageBroker
 from tests.mocks.registration_code import MockRegistrationCodeGenerator
-from . import constants
 
 
 @pytest.fixture

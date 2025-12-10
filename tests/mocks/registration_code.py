@@ -5,5 +5,5 @@ class MockRegistrationCodeGenerator(RegistrationCodeGenerator):
     def __init__(self, code):
         self.code = code
 
-    def generate(self) -> str:
+    def do_generate(self) -> str:
         return self.code

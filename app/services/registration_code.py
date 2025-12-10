@@ -16,13 +16,18 @@ def generate_registration_code() -> str:
 class RegistrationCodeGenerator(AdapterMixin, abc.ABC):
     adapter_config = 'REGISTRATION_CODE_GENERATOR_CONFIG'
 
-    @abc.abstractmethod
     def generate(self) -> str:
+        code = self.do_generate()
+        assert len(code) == settings.REGISTRATION_CODE_LENGTH
+        return code
+
+    @abc.abstractmethod
+    def do_generate(self) -> str:
         ...
 
 
 class RegistrationCodeGeneratorImpl(RegistrationCodeGenerator):
-    def generate(self) -> str:
+    def do_generate(self) -> str:
         """Генерация кода с буквами и цифрами"""
         config = getattr(settings, self.adapter_config)
         characters = string.ascii_uppercase + string.digits
