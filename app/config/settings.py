@@ -1,3 +1,4 @@
+import datetime
 import pathlib
 import os
 
@@ -12,7 +13,13 @@ env = environ.Env(
     DJANGO_DATABASE_URL=(str, 'psql://postgres:postgres@auth-db:5432/auth'),
     DJANGO_TIME_ZONE=(str, 'Europe/Moscow'),
     MESSAGE_BROKER_ADAPTER_PATH=(str, 'app.services.broker.MessageBrokerImpl'),
-    REGISTRATION_CODE_GENERATOR_ADAPTER_PATH=(str, 'app.services.RegistrationCodeGeneratorImpl'),
+    REGISTRATION_CODE_GENERATOR_ADAPTER_PATH=(str, 'app.services.registration_code.RegistrationCodeGeneratorImpl'),
+    JWT_TOKEN_SERVICE_CONFIG_PATH=(str, 'app.services.jwt_token.JwtTokenServiceImpl'),
+    JWT_TOKEN_SERVICE_ACCESS_SECRET=(str, 'insecure-jwt-access-secret'),
+    JWT_TOKEN_SERVICE_ACCESS_EXPIRES_MINUTES=(int, 15),
+    JWT_TOKEN_SERVICE_REFRESH_SECRET=(str, 'insecure-jwt-refresh-secret'),
+    JWT_TOKEN_SERVICE_REFRESH_EXPIRES_MINUTES=(int, 14 * 24 * 60),
+    JWT_TOKEN_SERVICE_ALGORITHM=(str, 'HS256'),
     REGISTRATION_CODE_LENGTH=(int, 32),
     PASSWORD_POLICY_MIN_LENGTH=(int, 8),
     PASSWORD_POLICY_MAX_LENGTH=(int, 20),
@@ -110,6 +117,17 @@ LOGGING = {
 MESSAGE_BROKER_CONFIG = {'path': env('MESSAGE_BROKER_ADAPTER_PATH')}
 
 REGISTRATION_CODE_GENERATOR_CONFIG = {'path': env('REGISTRATION_CODE_GENERATOR_ADAPTER_PATH')}
+
+JWT_TOKEN_SERVICE_CONFIG = {
+    'path': env('JWT_TOKEN_SERVICE_CONFIG'),
+    'kwargs': {
+        'access_secret_key': env('JWT_TOKEN_SERVICE_ACCESS_SECRET'),
+        'access_expires': datetime.timedelta(minutes=env('JWT_TOKEN_SERVICE_ACCESS_EXPIRES_MINUTES')),
+        'refresh_secret_key': env('JWT_TOKEN_SERVICE_REFRESH_SECRET'),
+        'refresh_expires': datetime.timedelta(minutes=env('JWT_TOKEN_SERVICE_REFRESH_EXPIRES_MINUTES')),
+        'algorithm': env('JWT_TOKEN_SERVICE_ALGORITHM'),
+    }
+}
 
 # Количество символов в коде регистрации. Влияет только на генерацию кодов, для самотестирования
 REGISTRATION_CODE_LENGTH = env('REGISTRATION_CODE_LENGTH')

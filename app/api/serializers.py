@@ -1,4 +1,8 @@
-__all__ = ['RegisterSerializer', 'VerifyEmailSerializer']
+__all__ = [
+    'RegisterSerializer',
+    'VerifyEmailSerializer',
+    'LoginSerializer',
+]
 
 from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
@@ -45,3 +49,8 @@ class RegisterSerializer(serializers.Serializer):
 
 class VerifyEmailSerializer(serializers.Serializer):
     code = serializers.CharField(max_length=Registration.MAX_CODE_LENGTH)
+
+
+class LoginSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+    password = serializers.CharField()
