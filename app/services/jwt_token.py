@@ -1,6 +1,7 @@
 __all__ = [
     'generate_access_token',
     'generate_refresh_token',
+    'decode_access_token',
     'JwtToken',
     'JwtTokenServiceException',
     'JwtTokenService',
@@ -13,6 +14,7 @@ from typing import Literal, TypeAlias
 
 import jwt
 from django.utils import timezone
+from django.utils.translation import gettext_lazy as _
 
 from app.utils import AdapterMixin
 
@@ -27,13 +29,26 @@ def generate_refresh_token(sub: str) -> JwtToken:
     return JwtTokenService.get_instance().generate_refresh(sub)
 
 
+def decode_access_token(token: JwtToken) -> tuple[str, str, tuple[str]]:
+    return JwtTokenService.get_instance().decode_access(token)
+
+
 class JwtTokenServiceException(Exception):
     ERR_INVALID = 1
     ERR_EXPIRED = 2
 
+    DESCRIPTIONS = {
+        ERR_INVALID: _('Invalid token.'),
+        ERR_EXPIRED: _('Token has expired.'),
+    }
+
     @property
     def code(self) -> int:
         return self.args[0]
+
+    @property
+    def description(self):
+        return
 
 
 class JwtTokenService(AdapterMixin, abc.ABC):

@@ -6,6 +6,7 @@ from rest_framework.response import Response
 
 from app import use_cases
 from . import serializers
+from .auth import anonymous_only, authenticated_only
 
 
 # TODO:
@@ -16,19 +17,17 @@ from . import serializers
 #  recover password
 class UserViewSet(viewsets.ViewSet):
     @decorators.action(methods=['POST'], detail=False)
+    @anonymous_only
     @atomic
     def register(self, request):
-        if request.user.is_authenticated:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
         data = self._get_validated_data(request.data, serializers.RegisterSerializer)
         use_cases.register_user(email=data['email'], password=data['password'])
         return Response(status=status.HTTP_200_OK)
 
     @decorators.action(methods=['GET'], detail=False)
+    @anonymous_only
     @atomic
     def verify(self, request):
-        if request.user.is_authenticated:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
         data = self._get_validated_data(request.query_params, serializers.VerifyEmailSerializer)
         try:
             use_cases.verify_email(code=data['code'])
@@ -38,10 +37,29 @@ class UserViewSet(viewsets.ViewSet):
             data = {'status': 'success'}
         return Response(status=status.HTTP_200_OK, data=data)
 
+    @decorators.action(methods=['POST'], detail=False, url_path='password-update')
+    @authenticated_only
+    def update_password(self, request):
+        ...
+
+    @decorators.action(methods=['POST'], detail=False, url_path='password-recover')
+    @anonymous_only
+    def recover_password(self, request):
+        ...
+
+    @decorators.action(methods=['GET'], detail=False, url_path='password-reset')
+    @anonymous_only
+    def reset_password(self, request):
+        ...
+
+    @decorators.action(methods=['GET'], detail=False, url_path='profile')
+    @authenticated_only
+    def get_profile(self, request):
+        ...
+
     @decorators.action(methods=['POST'], detail=False)
+    @anonymous_only
     def login(self, request):
-        if request.user.is_authenticated:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
         data = self._get_validated_data(request.query_params, serializers.LoginSerializer)
         try:
             refresh_token = use_cases.login(email=data['email'], password=data['password'])
@@ -51,12 +69,17 @@ class UserViewSet(viewsets.ViewSet):
             data = {'status': 'success', 'details': {'refresh_token': refresh_token}}
         return Response(status=status.HTTP_200_OK, data=data)
 
-    @decorators.action(methods=['POST'], detail=False, url_path='access-token')
-    def get_access_token(self, request):
-        if request.user.is_authenticated:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-        # TODO
+    @decorators.action(methods=['POST'], detail=False, url_path='create-access')
+    def create_access_token(self, request):
+        ...
 
+    @decorators.action(methods=['POST'], detail=False, url_path='refresh-refresh')
+    def refresh_refresh_token(self, request):
+        ...
+
+    @decorators.action(methods=['POST'], detail=False, url_path='revoke')
+    def logout(self, request):
+        ...
 
     @staticmethod
     def _get_validated_data(plain_data, serializer_class):

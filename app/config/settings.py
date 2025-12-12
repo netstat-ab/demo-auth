@@ -14,7 +14,7 @@ env = environ.Env(
     DJANGO_TIME_ZONE=(str, 'Europe/Moscow'),
     MESSAGE_BROKER_ADAPTER_PATH=(str, 'app.services.broker.MessageBrokerImpl'),
     REGISTRATION_CODE_GENERATOR_ADAPTER_PATH=(str, 'app.services.registration_code.RegistrationCodeGeneratorImpl'),
-    JWT_TOKEN_SERVICE_CONFIG_PATH=(str, 'app.services.jwt_token.JwtTokenServiceImpl'),
+    JWT_TOKEN_SERVICE_ADAPTER_PATH=(str, 'app.services.jwt_token.JwtTokenServiceImpl'),
     JWT_TOKEN_SERVICE_ACCESS_SECRET=(str, 'insecure-jwt-access-secret'),
     JWT_TOKEN_SERVICE_ACCESS_EXPIRES_MINUTES=(int, 15),
     JWT_TOKEN_SERVICE_REFRESH_SECRET=(str, 'insecure-jwt-refresh-secret'),
@@ -114,12 +114,19 @@ LOGGING = {
     },
 }
 
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'app.api.auth.JWTAuthentication',
+    ],
+    'UNAUTHENTICATED_USER': None,
+}
+
 MESSAGE_BROKER_CONFIG = {'path': env('MESSAGE_BROKER_ADAPTER_PATH')}
 
 REGISTRATION_CODE_GENERATOR_CONFIG = {'path': env('REGISTRATION_CODE_GENERATOR_ADAPTER_PATH')}
 
 JWT_TOKEN_SERVICE_CONFIG = {
-    'path': env('JWT_TOKEN_SERVICE_CONFIG'),
+    'path': env('JWT_TOKEN_SERVICE_ADAPTER_PATH'),
     'kwargs': {
         'access_secret_key': env('JWT_TOKEN_SERVICE_ACCESS_SECRET'),
         'access_expires': datetime.timedelta(minutes=env('JWT_TOKEN_SERVICE_ACCESS_EXPIRES_MINUTES')),
