@@ -6,20 +6,24 @@ import string
 
 from django.conf import settings
 
-from app.utils import AdapterMixin
+from ._base import Injectable
 
 
 def generate_registration_code() -> str:
     return RegistrationCodeGenerator.get_instance().generate()
 
 
-class RegistrationCodeGenerator(AdapterMixin, abc.ABC):
-    adapter_config = 'REGISTRATION_CODE_GENERATOR_CONFIG'
+class RegistrationCodeGenerator(Injectable, abc.ABC):
+    config_key = 'REGISTRATION_CODE_GENERATOR'
 
     def generate(self) -> str:
         code = self.do_generate()
-        assert len(code) == settings.REGISTRATION_CODE_LENGTH
+        assert len(code) == self.config['code_length']
         return code
+
+    @property
+    def config(self) -> dict:
+        return self._get_config()['config']
 
     @abc.abstractmethod
     def do_generate(self) -> str:
@@ -29,6 +33,5 @@ class RegistrationCodeGenerator(AdapterMixin, abc.ABC):
 class RegistrationCodeGeneratorImpl(RegistrationCodeGenerator):
     def do_generate(self) -> str:
         """Генерация кода с буквами и цифрами"""
-        config = getattr(settings, self.adapter_config)
         characters = string.ascii_uppercase + string.digits
-        return ''.join(secrets.choice(characters) for _ in config['code_length'])
+        return ''.join(secrets.choice(characters) for _ in range(self.config['code_length']))
