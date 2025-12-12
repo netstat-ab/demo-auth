@@ -3,15 +3,15 @@ __all__ = ['MessageBroker', 'MessageBrokerError']
 import abc
 
 from app.models import User
-from app.utils import AdapterMixin
+from ._base import Injectable
 
 
 class MessageBrokerError(Exception):
     ...
 
 
-class MessageBroker(AdapterMixin, abc.ABC):
-    adapter_config = 'MESSAGE_BROKER_CONFIG'
+class MessageBroker(Injectable, abc.ABC):
+    config_key = 'MESSAGE_BROKER'
 
     @abc.abstractmethod
     def registration_success(self, recipient: str, registration_code: str):

@@ -17,6 +17,6 @@ def now():
 
 @pytest.fixture(autouse=True)
 def message_broker(settings) -> type[MockMessageBroker]:
-    settings.MESSAGE_BROKER_CONFIG = {'path': 'tests.mocks.broker.MockMessageBroker'}
+    settings.MESSAGE_BROKER = {'path': 'tests.mocks.broker.MockMessageBroker'}
     MockMessageBroker.cleanup()
     return MockMessageBroker

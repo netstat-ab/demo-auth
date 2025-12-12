@@ -12,7 +12,8 @@ env = environ.Env(
     DJANGO_ALLOWED_HOSTS=(list, ['localhost']),
     DJANGO_DATABASE_URL=(str, 'psql://postgres:postgres@auth-db:5432/auth'),
     DJANGO_TIME_ZONE=(str, 'Europe/Moscow'),
-    MESSAGE_BROKER_ADAPTER_PATH=(str, 'app.services.broker.MessageBrokerImpl'),
+    MESSAGE_BROKER_PATH=(str, 'app.services.broker.MessageBrokerImpl'),
+    MESSAGE_BROKER_CONFIG=(str, {}),
     REGISTRATION_CODE_GENERATOR_PATH=(str, 'app.services.registration_code.RegistrationCodeGeneratorImpl'),
     REGISTRATION_CODE_GENERATOR_CONFIG=(dict, {'code_length': 32}),
     JWT_TOKEN_SERVICE_ADAPTER_PATH=(str, 'app.services.jwt_token.JwtTokenServiceImpl'),
@@ -121,7 +122,10 @@ REST_FRAMEWORK = {
     'UNAUTHENTICATED_USER': None,
 }
 
-MESSAGE_BROKER_CONFIG = {'path': env('MESSAGE_BROKER_ADAPTER_PATH')}
+MESSAGE_BROKER = {
+    'path': env('MESSAGE_BROKER_PATH'),
+    'config': env('MESSAGE_BROKER_CONFIG'),
+}
 
 REGISTRATION_CODE_GENERATOR = {
     'path': env('REGISTRATION_CODE_GENERATOR_PATH'),
