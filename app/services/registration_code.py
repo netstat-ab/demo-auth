@@ -12,16 +12,13 @@ def generate_registration_code() -> str:
 
 
 class RegistrationCodeGenerator(Injectable, abc.ABC):
-    config_key = 'REGISTRATION_CODE_GENERATOR'
+    settings_key = 'REGISTRATION_CODE_GENERATOR'
+    default_config = {'code_length': 32}
 
     def generate(self) -> str:
         code = self.do_generate()
         assert len(code) == self.config['code_length']
         return code
-
-    @property
-    def config(self) -> dict:
-        return self._get_config()['config']
 
     @abc.abstractmethod
     def do_generate(self) -> str:

@@ -11,7 +11,7 @@ class MessageBrokerError(Exception):
 
 
 class MessageBroker(Injectable, abc.ABC):
-    config_key = 'MESSAGE_BROKER'
+    settings_key = 'MESSAGE_BROKER'
 
     @abc.abstractmethod
     def registration_success(self, recipient: str, registration_code: str):

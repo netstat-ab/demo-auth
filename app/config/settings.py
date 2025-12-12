@@ -1,4 +1,5 @@
 import datetime
+import json
 import pathlib
 import os
 
@@ -13,9 +14,9 @@ env = environ.Env(
     DJANGO_DATABASE_URL=(str, 'psql://postgres:postgres@auth-db:5432/auth'),
     DJANGO_TIME_ZONE=(str, 'Europe/Moscow'),
     MESSAGE_BROKER_PATH=(str, 'app.services.broker.MessageBrokerImpl'),
-    MESSAGE_BROKER_CONFIG=(str, {}),
+    MESSAGE_BROKER_CONFIG=(json.loads, {}),
     REGISTRATION_CODE_GENERATOR_PATH=(str, 'app.services.registration_code.RegistrationCodeGeneratorImpl'),
-    REGISTRATION_CODE_GENERATOR_CONFIG=(dict, {'code_length': 32}),
+    REGISTRATION_CODE_GENERATOR_CONFIG=(json.loads, {}),
     JWT_TOKEN_SERVICE_ADAPTER_PATH=(str, 'app.services.jwt_token.JwtTokenServiceImpl'),
     JWT_TOKEN_SERVICE_ACCESS_SECRET=(str, 'insecure-jwt-access-secret'),
     JWT_TOKEN_SERVICE_ACCESS_EXPIRES_MINUTES=(int, 15),
