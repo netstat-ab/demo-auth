@@ -17,12 +17,8 @@ env = environ.Env(
     MESSAGE_BROKER_CONFIG=(json.loads, {}),
     REGISTRATION_CODE_GENERATOR_PATH=(str, 'app.services.registration_code.RegistrationCodeGeneratorImpl'),
     REGISTRATION_CODE_GENERATOR_CONFIG=(json.loads, {}),
-    JWT_TOKEN_SERVICE_ADAPTER_PATH=(str, 'app.services.jwt_token.JwtTokenServiceImpl'),
-    JWT_TOKEN_SERVICE_ACCESS_SECRET=(str, 'insecure-jwt-access-secret'),
-    JWT_TOKEN_SERVICE_ACCESS_EXPIRES_MINUTES=(int, 15),
-    JWT_TOKEN_SERVICE_REFRESH_SECRET=(str, 'insecure-jwt-refresh-secret'),
-    JWT_TOKEN_SERVICE_REFRESH_EXPIRES_MINUTES=(int, 14 * 24 * 60),
-    JWT_TOKEN_SERVICE_ALGORITHM=(str, 'HS256'),
+    JWT_TOKEN_SERVICE_PATH=(str, 'app.services.jwt_token.JwtTokenServiceImpl'),
+    JWT_TOKEN_SERVICE_CONFIG=(json.loads, {}),
     PASSWORD_POLICY_MIN_LENGTH=(int, 8),
     PASSWORD_POLICY_MAX_LENGTH=(int, 20),
 )
@@ -133,13 +129,15 @@ REGISTRATION_CODE_GENERATOR = {
     'config': env('REGISTRATION_CODE_GENERATOR_CONFIG'),
 }
 
+JWT_TOKEN_SERVICE_INSECURE_DEFAULTS = {
+    'access_secret': 'insecure-jwt-access-secret',
+    'access_expires_minutes': 15,
+    'refresh_secret': 'insecure-jwt-refresh-secret',
+    'refresh_expires_minutes': 14 * 24 * 60,
+    'algorithm': 'HS256',
+}
+
 JWT_TOKEN_SERVICE_CONFIG = {
-    'path': env('JWT_TOKEN_SERVICE_ADAPTER_PATH'),
-    'kwargs': {
-        'access_secret_key': env('JWT_TOKEN_SERVICE_ACCESS_SECRET'),
-        'access_expires': datetime.timedelta(minutes=env('JWT_TOKEN_SERVICE_ACCESS_EXPIRES_MINUTES')),
-        'refresh_secret_key': env('JWT_TOKEN_SERVICE_REFRESH_SECRET'),
-        'refresh_expires': datetime.timedelta(minutes=env('JWT_TOKEN_SERVICE_REFRESH_EXPIRES_MINUTES')),
-        'algorithm': env('JWT_TOKEN_SERVICE_ALGORITHM'),
-    }
+    'path': env('JWT_TOKEN_SERVICE_PATH'),
+    'config': env('JWT_TOKEN_SERVICE_CONFIG'),
 }

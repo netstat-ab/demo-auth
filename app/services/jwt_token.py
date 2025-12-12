@@ -13,10 +13,11 @@ import uuid
 from typing import Literal, TypeAlias
 
 import jwt
+from django.conf import settings
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
-from app.utils import AdapterMixin
+from ._base import Injectable
 
 JwtToken: TypeAlias = str
 
@@ -51,8 +52,8 @@ class JwtTokenServiceException(Exception):
         return
 
 
-class JwtTokenService(AdapterMixin, abc.ABC):
-    adapter_config = 'JWT_TOKEN_SERVICE_CONFIG'
+class JwtTokenService(Injectable, abc.ABC):
+    settings_key = 'JWT_TOKEN_SERVICE_CONFIG'
 
     @abc.abstractmethod
     def generate_access(self, sub: str, role: str, permissions: tuple[str]) -> JwtToken:
@@ -80,19 +81,27 @@ class JwtTokenService(AdapterMixin, abc.ABC):
 
 
 class JwtTokenServiceImpl(JwtTokenService):
-    def __init__(
-            self,
-            access_secret_key: str,
-            access_expires: datetime.timedelta,
-            refresh_secret_key: str,
-            refresh_expires: datetime.timedelta,
-            algorithm: str = 'HS256',
-    ):
-        self.access_secret = access_secret_key
-        self.refresh_secret = refresh_secret_key
-        self.access_expires = access_expires
-        self.refresh_expires = refresh_expires
-        self.algorithm = algorithm
+    default_config = settings.JWT_TOKEN_SERVICE_INSECURE_DEFAULTS
+
+    @property
+    def access_secret(self) -> str:
+        return self.config['access_secret']
+
+    @property
+    def access_expires(self) -> datetime.timedelta:
+        return datetime.timedelta(minutes=self.config['access_expires_minutes'])
+
+    @property
+    def refresh_secret(self) -> str:
+        return self.config['refresh_secret']
+
+    @property
+    def refresh_expires(self) -> datetime.timedelta:
+        return datetime.timedelta(minutes=self.config['refresh_expires_minutes'])
+
+    @property
+    def algorithm(self) -> str:
+        return self.config['algorithm']
 
     def generate_access(self, sub, role, permissions) -> str:
         payload = {
