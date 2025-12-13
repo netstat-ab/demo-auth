@@ -13,7 +13,6 @@ def generate_registration_code() -> str:
 
 class RegistrationCodeGenerator(Injectable, abc.ABC):
     settings_key = 'REGISTRATION_CODE_GENERATOR'
-    default_config = {'code_length': 32}
 
     def generate(self) -> str:
         code = self.do_generate()

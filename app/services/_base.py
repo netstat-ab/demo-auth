@@ -16,10 +16,9 @@ T = typing.TypeVar('T')
 
 class Injectable:
     settings_key: str
-    default_config = {}
 
     def __init__(self, config: dict):
-        self.config = self.default_config | config
+        self.config = config
 
     @classmethod
     def get_instance(cls: type[T]) -> T:

@@ -81,8 +81,6 @@ class JwtTokenService(Injectable, abc.ABC):
 
 
 class JwtTokenServiceImpl(JwtTokenService):
-    default_config = settings.JWT_TOKEN_SERVICE_INSECURE_DEFAULTS
-
     @property
     def access_secret(self) -> str:
         return self.config['access_secret']
