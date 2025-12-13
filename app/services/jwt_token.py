@@ -13,11 +13,10 @@ import uuid
 from typing import Literal, TypeAlias
 
 import jwt
-from django.conf import settings
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
-from ._base import Injectable
+from ._base import BaseService
 
 JwtToken: TypeAlias = str
 
@@ -52,7 +51,7 @@ class JwtTokenServiceException(Exception):
         return
 
 
-class JwtTokenService(Injectable, abc.ABC):
+class JwtTokenService(BaseService, abc.ABC):
     settings_key = 'JWT_TOKEN_SERVICE_CONFIG'
 
     @abc.abstractmethod

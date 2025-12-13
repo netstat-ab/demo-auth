@@ -4,14 +4,14 @@ import abc
 import secrets
 import string
 
-from ._base import Injectable
+from ._base import BaseService
 
 
 def generate_registration_code() -> str:
     return RegistrationCodeGenerator.get_instance().generate()
 
 
-class RegistrationCodeGenerator(Injectable, abc.ABC):
+class RegistrationCodeGenerator(BaseService, abc.ABC):
     settings_key = 'REGISTRATION_CODE_GENERATOR'
 
     def generate(self) -> str:

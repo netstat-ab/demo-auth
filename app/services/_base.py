@@ -1,4 +1,4 @@
-__all__ = ['Injectable']
+__all__ = ['BaseService']
 
 import inspect
 import typing
@@ -14,7 +14,7 @@ class ImproperlyConfigured(Exception):
 T = typing.TypeVar('T')
 
 
-class Injectable:
+class BaseService:
     settings_key: str
 
     def __init__(self, config: dict):

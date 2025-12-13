@@ -3,14 +3,14 @@ __all__ = ['MessageBroker', 'MessageBrokerError']
 import abc
 
 from app.models import User
-from ._base import Injectable
+from ._base import BaseService
 
 
 class MessageBrokerError(Exception):
     ...
 
 
-class MessageBroker(Injectable, abc.ABC):
+class MessageBroker(BaseService, abc.ABC):
     settings_key = 'MESSAGE_BROKER'
 
     @abc.abstractmethod
