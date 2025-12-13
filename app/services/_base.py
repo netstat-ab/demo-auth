@@ -31,7 +31,7 @@ class BaseService:
         try:
             adapter = import_string(import_path)
         except ImportError:
-            raise ImproperlyConfigured(f'Failed to import {cls.import_path}')
+            raise ImproperlyConfigured(f'Failed to import {import_path}')
         assert inspect.isclass(adapter)
         assert not inspect.isabstract(adapter)
         assert issubclass(adapter, cls)

@@ -2,7 +2,7 @@ import pytest
 from django.urls import reverse
 
 from tests.api import constants
-from tests.mocks.registration_code import MockRegistrationCodeGenerator
+from tests.mocks import MockRegistrationCodeGenerator
 
 
 @pytest.fixture(autouse=True)
@@ -36,7 +36,7 @@ def registration_code():
 @pytest.fixture(autouse=True)
 def registration_code_service(settings, registration_code):
     settings.REGISTRATION_CODE_GENERATOR = {
-        'path': 'tests.mocks.registration_code.MockRegistrationCodeGenerator',
+        'path': 'tests.mocks.MockRegistrationCodeGenerator',
         'config': {
             'code': registration_code,
             'code_length': len(registration_code),

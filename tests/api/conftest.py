@@ -1,7 +1,7 @@
 import pytest
 from rest_framework.test import APIClient
 
-from tests.mocks.broker import MockMessageBroker
+from tests.mocks import MockMessageBroker
 from . import constants
 
 
@@ -18,7 +18,7 @@ def now():
 @pytest.fixture(autouse=True)
 def message_broker(settings) -> type[MockMessageBroker]:
     settings.MESSAGE_BROKER = {
-        'path': 'tests.mocks.broker.MockMessageBroker',
+        'path': 'tests.mocks.MockMessageBroker',
         'config': {},
     }
     MockMessageBroker.cleanup()
