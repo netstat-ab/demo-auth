@@ -5,7 +5,8 @@ import functools
 from django.utils.translation import gettext_lazy as _
 from rest_framework import authentication, exceptions
 
-from services import decode_access_token, JwtTokenServiceException
+from app.constants import ANONYMOUS_ONLY, INVALID_HEADER
+from app.services import decode_access_token, JwtTokenServiceException
 
 
 class JWTAuthentication(authentication.BaseAuthentication):
@@ -25,7 +26,7 @@ class JWTAuthentication(authentication.BaseAuthentication):
         try:
             auth_header = auth_header.decode('utf-8')
         except UnicodeError:
-            raise exceptions.AuthenticationFailed(_('Invalid header.'))
+            raise exceptions.AuthenticationFailed(_(INVALID_HEADER))
 
         auth_header = auth_header.split()
 
@@ -47,7 +48,7 @@ def anonymous_only(fun):
     @functools.wraps(fun)
     def wrapper(self, request, *agrs, **kwargs):
         if request.auth is not None:
-            raise exceptions.ValidationError(_('Anonymous only.'))
+            raise exceptions.ValidationError(_(ANONYMOUS_ONLY))
         return fun(self, request, *agrs, **kwargs)
 
     return wrapper

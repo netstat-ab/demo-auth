@@ -13,8 +13,7 @@ pytestmark = pytest.mark.django_db
 class TestExistingUser(CommonUserRegistrationTestBase):
     @pytest.fixture
     def user(self):
-        u = User.objects.filter(email=constants.USER_3_EMAIL).first()
-        assert u is not None
+        u = User.objects.get(email=constants.USER_3_EMAIL)
         assert u.has_verified_email
         assert not Registration.objects.filter(user=u).exists()
         return u

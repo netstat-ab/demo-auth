@@ -8,3 +8,5 @@ PASSWORD_DOES_NOT_CONTAIN_ALL_REQUIRED_CHARACTERS = (
     'Password should contain at least one uppercase, one lowercase letter, one digit and one '
     'special character .,!@#$%^&*-_=+'
 )
+ANONYMOUS_ONLY = 'Anonymous only.'
+INVALID_HEADER = 'Invalid header.'

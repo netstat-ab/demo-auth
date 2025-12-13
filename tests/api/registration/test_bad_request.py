@@ -3,7 +3,12 @@
 from functools import partial
 
 import pytest
+from django.utils.translation import gettext_lazy as _
 from rest_framework import status
+
+from app.constants import ANONYMOUS_ONLY
+from app.models import User
+from tests.api import constants
 
 pytestmark = pytest.mark.django_db
 
@@ -22,6 +27,39 @@ def data() -> dict:
 @pytest.fixture
 def do_post(client, url):
     return partial(client.post, url, content_type='application/json')
+
+
+@pytest.fixture
+def user():
+    return User.objects.get(email=constants.USER_3_EMAIL)
+
+
+@pytest.fixture
+def token():
+    return 'no_matter'
+
+
+@pytest.fixture
+def jwt_token_service(settings, user, token):
+    settings.JWT_TOKEN_SERVICE_CONFIG = {
+        'path': 'tests.mocks.MockJwtTokenService',
+        'config': {
+            'access_tokens': {
+                token: (user.email, 'some_role', ('some_permission',)),
+            }
+        }
+    }
+
+
+@pytest.fixture
+def do_post_authenticated(client, url, token):
+    return partial(
+        client.post,
+        url,
+        content_type='application/json',
+        headers={'Authorization': f'Bearer {token}'}
+
+    )
 
 
 @pytest.mark.parametrize(
@@ -75,3 +113,13 @@ def test_password_mismatch(do_post):
     })
     assert response.status_code == status.HTTP_400_BAD_REQUEST
     assert response.json() == {'non_field_errors': ['Passwords do not match.']}
+
+
+def test_authenticated(do_post_authenticated, jwt_token_service):
+    response = do_post_authenticated(data={
+        'email': 'valid@example.com',
+        'password': 'P@ssw0rd',
+        'password_confirmation': 'P@ssw0rd',
+    })
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
+    assert response.json() == [_(ANONYMOUS_ONLY)]

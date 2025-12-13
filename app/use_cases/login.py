@@ -1,8 +1,7 @@
 __all__ = ['LoginError', 'login']
 
 from app.models import User
-from app.services import JwtToken
-from services import generate_refresh_token
+from app.services import JwtToken, generate_refresh_token
 
 
 class LoginError(Exception):

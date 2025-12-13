@@ -46,8 +46,7 @@ class SuccessUserRegistrationTestBase(CommonUserRegistrationTestBase):
 
         with freezegun.freeze_time(now):
             client.post(url, data=data, content_type='application/json')
-        registration_record = Registration.objects.filter(code=registration_code).first()
-        assert registration_record is not None
+        registration_record = Registration.objects.get(code=registration_code)
         assert registration_record.user.email == data['email']
         assert registration_record.code == registration_code
         assert registration_record.created_at == now
