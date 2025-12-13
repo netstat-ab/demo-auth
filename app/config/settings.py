@@ -7,29 +7,14 @@ import environ
 
 BASE_DIR = pathlib.Path(__file__).resolve().parent.parent.parent
 
-env = environ.Env(
-    DJANGO_DEBUG=(bool, False),
-    DJANGO_SECRET_KEY=(str, 'django-insecure-dc@u$7=5l4z9$*o@trdm!0*+vif2h(csvyjg((!8ez(7e2qg+&'),
-    DJANGO_ALLOWED_HOSTS=(list, ['localhost']),
-    DJANGO_DATABASE_URL=(str, 'psql://postgres:postgres@auth-db:5432/auth'),
-    DJANGO_TIME_ZONE=(str, 'Europe/Moscow'),
-    MESSAGE_BROKER_PATH=(str, 'app.services.broker.MessageBrokerImpl'),
-    MESSAGE_BROKER_CONFIG=(json.loads, {}),
-    REGISTRATION_CODE_GENERATOR_PATH=(str, 'app.services.registration_code.RegistrationCodeGeneratorImpl'),
-    REGISTRATION_CODE_GENERATOR_CONFIG=(json.loads, {}),
-    JWT_TOKEN_SERVICE_PATH=(str, 'app.services.jwt_token.JwtTokenServiceImpl'),
-    JWT_TOKEN_SERVICE_CONFIG=(json.loads, {}),
-    PASSWORD_POLICY_MIN_LENGTH=(int, 8),
-    PASSWORD_POLICY_MAX_LENGTH=(int, 20),
-)
-
+env = environ.Env()
 env.read_env(os.getenv('ENV_FILE', BASE_DIR.joinpath('.env')))
 
-SECRET_KEY = env('DJANGO_SECRET_KEY')
+DEBUG = env('DJANGO_DEBUG', bool, False)
 
-DEBUG = env('DJANGO_DEBUG')
+SECRET_KEY = env('DJANGO_SECRET_KEY', default='django-insecure-dc@u$7=5l4z9$*o@trdm!0*+vif2h(csvyjg((!8ez(7e2qg+&')
 
-ALLOWED_HOSTS = env('DJANGO_ALLOWED_HOSTS')
+ALLOWED_HOSTS = env('DJANGO_ALLOWED_HOSTS', list, ['localhost'])
 
 INSTALLED_APPS = [
     'django.contrib.auth',
@@ -41,10 +26,8 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    # 'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
-    # 'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
@@ -53,6 +36,7 @@ ROOT_URLCONF = 'app.config.urls'
 TEMPLATES = []
 
 if DEBUG:
+    # For DRF template views
     TEMPLATES.append({
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [],
@@ -67,18 +51,18 @@ if DEBUG:
 
 WSGI_APPLICATION = 'app.config.wsgi.application'
 
-DATABASES = {'default': env.db('DJANGO_DATABASE_URL')}
+DATABASES = {'default': env.db('DJANGO_DATABASE_URL', 'psql://postgres:postgres@auth-db:5432/auth')}
 
 AUTH_PASSWORD_VALIDATORS = []
 
 PASSWORD_POLICY = {
-    'min_length': env('PASSWORD_POLICY_MIN_LENGTH'),
-    'max_length': env('PASSWORD_POLICY_MAX_LENGTH'),
+    'min_length': env('PASSWORD_POLICY_MIN_LENGTH', int, 8),
+    'max_length': env('PASSWORD_POLICY_MAX_LENGTH', int, 20),
 }
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = env('DJANGO_TIME_ZONE')
+TIME_ZONE = env('DJANGO_TIME_ZONE', default='Europe/Moscow')
 
 USE_I18N = True
 
@@ -114,16 +98,19 @@ REST_FRAMEWORK = {
 }
 
 MESSAGE_BROKER = {
-    'path': env('MESSAGE_BROKER_PATH'),
-    'config': env('MESSAGE_BROKER_CONFIG'),
+    'path': env('MESSAGE_BROKER_PATH', default='app.services.broker.MessageBrokerImpl'),
+    'config': env('MESSAGE_BROKER_CONFIG', json.loads, {}),
 }
 
 REGISTRATION_CODE_GENERATOR = {
-    'path': env('REGISTRATION_CODE_GENERATOR_PATH'),
-    'config': env('REGISTRATION_CODE_GENERATOR_CONFIG'),
+    'path': env(
+        'REGISTRATION_CODE_GENERATOR_PATH',
+        default='app.services.registration_code.RegistrationCodeGeneratorImpl',
+    ),
+    'config': env('REGISTRATION_CODE_GENERATOR_CONFIG', json.loads, {'code_length': 20}),
 }
 
-JWT_TOKEN_SERVICE_INSECURE_DEFAULTS = {
+_JWT_TOKEN_SERVICE_CONFIG_INSECURE_DEFAULTS = {
     'access_secret': 'insecure-jwt-access-secret',
     'access_expires_minutes': 15,
     'refresh_secret': 'insecure-jwt-refresh-secret',
@@ -132,6 +119,6 @@ JWT_TOKEN_SERVICE_INSECURE_DEFAULTS = {
 }
 
 JWT_TOKEN_SERVICE_CONFIG = {
-    'path': env('JWT_TOKEN_SERVICE_PATH'),
-    'config': env('JWT_TOKEN_SERVICE_CONFIG'),
+    'path': env('JWT_TOKEN_SERVICE_PATH', default='app.services.jwt_token.JwtTokenServiceImpl'),
+    'config': env('JWT_TOKEN_SERVICE_CONFIG', json.loads, _JWT_TOKEN_SERVICE_CONFIG_INSECURE_DEFAULTS),
 }
