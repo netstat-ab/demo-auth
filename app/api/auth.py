@@ -6,7 +6,7 @@ from django.utils.translation import gettext_lazy as _
 from rest_framework import authentication, exceptions
 
 from app.constants import ANONYMOUS_ONLY, INVALID_HEADER
-from app.services import decode_access_token, JwtTokenServiceException
+from app.services import JwtTokenServiceException, JwtTokenService
 
 
 class JWTAuthentication(authentication.BaseAuthentication):
@@ -33,10 +33,12 @@ class JWTAuthentication(authentication.BaseAuthentication):
         if len(auth_header) != 2 or auth_header[0] != self.keyword:
             return
 
+        service = JwtTokenService.get_instance()
         try:
-            return None, decode_access_token(auth_header[1])
+            decoded = service.decode_access(auth_header[1])
         except JwtTokenServiceException as e:
             raise exceptions.AuthenticationFailed(e.description)
+        return None, decoded
 
     def authenticate_header(self, request):
         return self.keyword

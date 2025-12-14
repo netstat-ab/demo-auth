@@ -1,7 +1,4 @@
 __all__ = [
-    'generate_access_token',
-    'generate_refresh_token',
-    'decode_access_token',
     'JwtToken',
     'JwtTokenServiceException',
     'JwtTokenService',
@@ -22,22 +19,6 @@ JwtToken: TypeAlias = str
 Sub: TypeAlias = str
 Jti: TypeAlias = str
 Extra: TypeAlias = dict
-
-
-def generate_access_token(sub: Sub, extra: Extra) -> JwtToken:
-    return JwtTokenService.get_instance().generate_access(sub, extra)
-
-
-def generate_refresh_token(sub: Sub) -> JwtToken:
-    return JwtTokenService.get_instance().generate_refresh(sub)
-
-
-def decode_access_token(token: JwtToken) -> tuple[Sub, Extra]:
-    return JwtTokenService.get_instance().decode_access(token)
-
-
-def decode_refresh_token(token: JwtToken) -> tuple[Jti, Sub]:
-    return JwtTokenService.get_instance().decode_refresh(token)
 
 
 class JwtTokenServiceException(Exception):
