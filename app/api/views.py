@@ -64,11 +64,17 @@ class UserViewSet(viewsets.ViewSet):
     def login(self, request):
         data = self._get_validated_data(request.data, serializers.LoginSerializer)
         try:
-            refresh_token = use_cases.login(email=data['email'], password=data['password'])
+            refresh_token, access_token = use_cases.login(email=data['email'], password=data['password'])
         except use_cases.LoginError:
             data = {'status': STATUS_FAILED, 'details': {'reason': _(INVALID_CREDENTIALS)}}
         else:
-            data = {'status': STATUS_SUCCESS, 'details': {'refresh_token': refresh_token}}
+            data = {
+                'status': STATUS_SUCCESS,
+                'details': {
+                    'refresh_token': refresh_token,
+                    'access_token': access_token,
+                }
+            }
         return Response(status=status.HTTP_200_OK, data=data)
 
     @decorators.action(methods=['POST'], detail=False, url_path='create-access')

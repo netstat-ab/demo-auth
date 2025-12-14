@@ -66,8 +66,9 @@ def verified_user():
 
 @pytest.fixture
 def verified_user_password(verified_user):
-    assert verified_user.check_password(constants.USER_3_PASSWORD)
-    return constants.USER_3_PASSWORD
+    password = constants.USER_3_PASSWORD
+    assert verified_user.check_password(password)
+    return password
 
 
 @pytest.fixture
