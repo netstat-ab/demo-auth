@@ -2,6 +2,7 @@ __all__ = [
     'RegisterSerializer',
     'VerifyEmailSerializer',
     'LoginSerializer',
+    'RefreshTokenSerializer',
 ]
 
 from django.utils.translation import gettext_lazy as _
@@ -54,3 +55,7 @@ class VerifyEmailSerializer(serializers.Serializer):
 class LoginSerializer(serializers.Serializer):
     email = serializers.EmailField()
     password = serializers.CharField()
+
+
+class RefreshTokenSerializer(serializers.Serializer):
+    token = serializers.CharField()

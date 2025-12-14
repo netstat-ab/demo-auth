@@ -77,13 +77,21 @@ class UserViewSet(viewsets.ViewSet):
             }
         return Response(status=status.HTTP_200_OK, data=data)
 
-    @decorators.action(methods=['POST'], detail=False, url_path='create-access')
-    def create_access_token(self, request):
+    @decorators.action(methods=['POST'], detail=False, url_path='refresh-access')
+    def refresh_access_token(self, request):
         ...
 
-    @decorators.action(methods=['POST'], detail=False, url_path='refresh-refresh')
-    def refresh_refresh_token(self, request):
-        ...
+    @decorators.action(methods=['POST'], detail=False, url_path='rotate-refresh')
+    @authenticated_only
+    def rotate_refresh_token(self, request):
+        data = self._get_validated_data(request.data, serializers.RefreshTokenSerializer)
+        try:
+            new_token = use_cases.rotate_refresh_token(request.auth['sub'], data['token'])
+        except use_cases.RotateRefreshTokenError as e:
+            data = {'status': STATUS_FAILED, 'details': {'reason': _(e.description)}}
+        else:
+            data = {'status': STATUS_SUCCESS, 'details': {'refresh_token': new_token}}
+        return Response(status=status.HTTP_200_OK, data=data)
 
     @decorators.action(methods=['POST'], detail=False, url_path='revoke')
     def logout(self, request):

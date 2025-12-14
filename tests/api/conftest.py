@@ -32,17 +32,22 @@ def authenticated_user():
 
 
 @pytest.fixture
-def valid_token():
+def authenticated_access_token():
     return 'no_matter'
 
 
 @pytest.fixture
-def jwt_token_service(settings, authenticated_user, valid_token):
+def invalid_refresh_token():
+    return 'invalid_token'
+
+
+@pytest.fixture
+def jwt_token_service(settings, authenticated_user, authenticated_access_token):
     settings.JWT_TOKEN_SERVICE_CONFIG = {
         'path': 'tests.mocks.MockJwtTokenService',
         'config': {
             'access_tokens': {
-                valid_token: (authenticated_user.email, {}),
+                authenticated_access_token: (authenticated_user.email, {}),
             }
         }
     }

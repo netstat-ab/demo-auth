@@ -10,6 +10,8 @@ PASSWORD_DOES_NOT_CONTAIN_ALL_REQUIRED_CHARACTERS = (
 )
 ANONYMOUS_ONLY = 'Anonymous only.'
 INVALID_HEADER = 'Invalid header.'
+INVALID_TOKEN = 'Invalid token.'
+TOKEN_HAS_EXPIRED = 'Token has expired.'
 INVALID_CREDENTIALS = 'Invalid credentials.'
 STATUS_FAILED = 'failed'
 STATUS_SUCCESS = 'success'

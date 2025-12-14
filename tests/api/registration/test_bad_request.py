@@ -7,6 +7,7 @@ from django.utils.translation import gettext_lazy as _
 from rest_framework import status
 
 from app.constants import ANONYMOUS_ONLY
+from tests.api.utils import authorization_header
 
 pytestmark = pytest.mark.django_db
 
@@ -28,12 +29,12 @@ def do_post(client, url):
 
 
 @pytest.fixture
-def do_post_authenticated(client, url, valid_token):
+def do_post_authenticated(client, url, authenticated_access_token):
     return partial(
         client.post,
         url,
         content_type='application/json',
-        headers={'Authorization': f'Bearer {valid_token}'}
+        headers=authorization_header(authenticated_access_token),
 
     )
 

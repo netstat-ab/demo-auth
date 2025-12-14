@@ -14,6 +14,7 @@ from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 from ._base import BaseService
+from app.constants import INVALID_TOKEN, TOKEN_HAS_EXPIRED
 
 JwtToken: TypeAlias = str
 Sub: TypeAlias = str
@@ -26,8 +27,8 @@ class JwtTokenServiceException(Exception):
     ERR_EXPIRED = 2
 
     DESCRIPTIONS = {
-        ERR_INVALID: _('Invalid token.'),
-        ERR_EXPIRED: _('Token has expired.'),
+        ERR_INVALID: _(INVALID_TOKEN),
+        ERR_EXPIRED: _(TOKEN_HAS_EXPIRED),
     }
 
     @property
