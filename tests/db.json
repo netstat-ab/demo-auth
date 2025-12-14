@@ -234,7 +234,7 @@
     "model": "app.user",
     "pk": 2,
     "fields": {
-      "password": "pbkdf2_sha256$600000$RZQoQBiGgMZAsfVboKbVZx$vu7Mq9qW4A2abWBWlDdxA8tAYuJBWKvasrMJ8BDhaXg=",
+      "password": "pbkdf2_sha256$600000$9BkA3ws72JkH8t2ofOsZs0$O1OjgFPKGiTCByB17p3CuNfl1genpJg2gmqEYXX0UhE=",
       "last_login": "2025-08-06T14:40:19.347Z",
       "email": "user2@example.org",
       "has_verified_email": false,
