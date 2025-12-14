@@ -16,10 +16,15 @@ SECRET_KEY = env('DJANGO_SECRET_KEY', default='django-insecure-dc@u$7=5l4z9$*o@t
 
 ALLOWED_HOSTS = env('DJANGO_ALLOWED_HOSTS', list, ['localhost'])
 
+
+def _debug_only(value) -> list:
+    return [value] if DEBUG else []
+
+
 INSTALLED_APPS = [
     'django.contrib.auth',
     'django.contrib.contenttypes',
-    'django.contrib.staticfiles',
+    *_debug_only('django.contrib.staticfiles'),
     'rest_framework',
     'app',
 ]
@@ -33,21 +38,17 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'app.config.urls'
 
-TEMPLATES = []
-
-if DEBUG:
-    # For DRF template views
-    TEMPLATES.append({
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
-        'APP_DIRS': True,
-        'OPTIONS': {
-            'context_processors': [
-                'django.template.context_processors.debug',
-                'django.template.context_processors.request',
-            ],
-        },
-    })
+TEMPLATES = _debug_only({
+    'BACKEND': 'django.template.backends.django.DjangoTemplates',
+    'DIRS': [],
+    'APP_DIRS': True,
+    'OPTIONS': {
+        'context_processors': [
+            'django.template.context_processors.debug',
+            'django.template.context_processors.request',
+        ],
+    },
+})
 
 WSGI_APPLICATION = 'app.config.wsgi.application'
 
