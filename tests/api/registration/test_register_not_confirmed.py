@@ -12,7 +12,7 @@ from ._base import SuccessUserRegistrationTestBase
 pytestmark = pytest.mark.django_db
 
 
-class NotConfirmedUserTestBase(SuccessUserRegistrationTestBase):
+class NotVerifiedUserTestBase(SuccessUserRegistrationTestBase):
     @pytest.fixture
     def data(self, now, user, password='P@ssw0rd') -> dict:
         assert not user.has_verified_email
@@ -43,18 +43,16 @@ class NotConfirmedUserTestBase(SuccessUserRegistrationTestBase):
         assert user.created_at == previous_created_at_value
 
 
-class TestUserHaveNoRegistrationRecord(NotConfirmedUserTestBase):
+class TestUserHaveNoRegistrationRecord(NotVerifiedUserTestBase):
     @pytest.fixture
-    def user(self):
-        u = User.objects.get(email=constants.USER_1_EMAIL)
-        assert not Registration.objects.filter(user=u).exists()
-        return u
+    def user(self, not_verified_user_without_registration_record):
+        return not_verified_user_without_registration_record
 
 
-class TestUserHaveRegistrationRecord(NotConfirmedUserTestBase):
+class TestUserHaveRegistrationRecord(NotVerifiedUserTestBase):
     @pytest.fixture
-    def user(self):
-        return User.objects.get(email=constants.USER_2_EMAIL)
+    def user(self, not_verified_user):
+        return not_verified_user
 
     @pytest.fixture
     def existing_registration_id(self, user):

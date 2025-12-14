@@ -1,5 +1,3 @@
-"""Тестирование некорректных запросов, ошибки 400"""
-
 from functools import partial
 
 import pytest
@@ -15,26 +13,16 @@ empty = object()
 
 @pytest.fixture
 def data() -> dict:
-    return {
-        'email': 'valid_email@example.com',
-        'password': 'P@ssw0rd',
-        'password_confirmation': 'P@ssw0rd',
-    }
+    return {'email': 'valid@email.addr', 'password': 'no_matter'}
 
 
 @pytest.fixture
-def do_post(client, url):
-    return partial(client.post, url, content_type='application/json')
-
-
-@pytest.fixture
-def do_post_authenticated(client, url, valid_token):
+def request_login_authenticated(client, url, valid_token):
     return partial(
         client.post,
         url,
         content_type='application/json',
         headers={'Authorization': f'Bearer {valid_token}'}
-
     )
 
 
@@ -48,9 +36,6 @@ def do_post_authenticated(client, url, valid_token):
         ('password', empty, 'This field is required.'),
         ('password', '', 'This field may not be blank.'),
         ('password', None, 'This field may not be null.'),
-        ('password_confirmation', empty, 'This field is required.'),
-        ('password_confirmation', '', 'This field may not be blank.'),
-        ('password_confirmation', None, 'This field may not be null.'),
     ],
     ids=[
         'no email',
@@ -60,12 +45,9 @@ def do_post_authenticated(client, url, valid_token):
         'no password',
         'blank password',
         'null password',
-        'no password_confirmation',
-        'blank password_confirmation',
-        'null password_confirmation',
     ]
 )
-def test_invalid_field(do_post, data, field, value, expected_error):
+def test_invalid_field(request_login, data, field, value, expected_error):
     """
     Есть недостающие поля или поля неправильного формата.
     """
@@ -73,25 +55,12 @@ def test_invalid_field(do_post, data, field, value, expected_error):
         data.pop(field)
     else:
         data[field] = value
-    response = do_post(data=data)
+    response = request_login(data=data)
     assert response.status_code == status.HTTP_400_BAD_REQUEST
     assert response.json() == {field: [expected_error]}
 
 
-def test_password_mismatch(do_post):
-    """
-    Пароль не совпадает с подтверждением пароля
-    """
-    response = do_post(data={
-        'email': 'valid@example.com',
-        'password': 'P@ssw0rd',
-        'password_confirmation': 'DoN0tM@tch',
-    })
-    assert response.status_code == status.HTTP_400_BAD_REQUEST
-    assert response.json() == {'non_field_errors': ['Passwords do not match.']}
-
-
-def test_authenticated(do_post_authenticated, data, jwt_token_service):
-    response = do_post_authenticated(data=data)
+def test_authenticated(request_login_authenticated, data, jwt_token_service):
+    response = request_login_authenticated(data=data)
     assert response.status_code == status.HTTP_400_BAD_REQUEST
     assert response.json() == [_(ANONYMOUS_ONLY)]

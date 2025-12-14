@@ -12,12 +12,12 @@ pytestmark = pytest.mark.django_db
 
 
 @pytest.fixture
-def do_get_authenticated(client, url, token):
+def do_get_authenticated(client, url, valid_token):
     return partial(
         client.get,
         url,
         content_type='application/json',
-        headers={'Authorization': f'Bearer {token}'}
+        headers={'Authorization': f'Bearer {valid_token}'}
     )
 
 

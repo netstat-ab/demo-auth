@@ -1,10 +1,12 @@
 __all__ = ['UserViewSet']
 
 from django.db.transaction import atomic
+from django.utils.translation import gettext_lazy as _
 from rest_framework import viewsets, decorators, status
 from rest_framework.response import Response
 
 from app import use_cases
+from app.constants import STATUS_FAILED, STATUS_SUCCESS, INVALID_CREDENTIALS
 from . import serializers
 from .auth import anonymous_only, authenticated_only
 
@@ -32,9 +34,9 @@ class UserViewSet(viewsets.ViewSet):
         try:
             use_cases.verify_email(code=data['code'])
         except use_cases.EmailVerificationError:
-            data = {'status': 'failed', 'details': {'reason': 'invalid_code'}}
+            data = {'status': STATUS_FAILED, 'details': {'reason': 'invalid_code'}}
         else:
-            data = {'status': 'success'}
+            data = {'status': STATUS_SUCCESS}
         return Response(status=status.HTTP_200_OK, data=data)
 
     @decorators.action(methods=['POST'], detail=False, url_path='password-update')
@@ -60,13 +62,13 @@ class UserViewSet(viewsets.ViewSet):
     @decorators.action(methods=['POST'], detail=False)
     @anonymous_only
     def login(self, request):
-        data = self._get_validated_data(request.query_params, serializers.LoginSerializer)
+        data = self._get_validated_data(request.data, serializers.LoginSerializer)
         try:
             refresh_token = use_cases.login(email=data['email'], password=data['password'])
         except use_cases.LoginError:
-            data = {'status': 'failed', 'details': {'reason': 'invalid_credentials'}}
+            data = {'status': STATUS_FAILED, 'details': {'reason': _(INVALID_CREDENTIALS)}}
         else:
-            data = {'status': 'success', 'details': {'refresh_token': refresh_token}}
+            data = {'status': STATUS_SUCCESS, 'details': {'refresh_token': refresh_token}}
         return Response(status=status.HTTP_200_OK, data=data)
 
     @decorators.action(methods=['POST'], detail=False, url_path='create-access')

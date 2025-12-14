@@ -1,7 +1,7 @@
 import pytest
 from rest_framework.test import APIClient
 
-from app.models import User
+from app.models import User, Registration
 from tests.mocks import MockMessageBroker, MockJwtTokenService
 from . import constants
 
@@ -32,19 +32,60 @@ def authenticated_user():
 
 
 @pytest.fixture
-def token():
+def valid_token():
     return 'no_matter'
 
 
 @pytest.fixture
-def jwt_token_service(settings, authenticated_user, token):
+def jwt_token_service(settings, authenticated_user, valid_token):
     settings.JWT_TOKEN_SERVICE_CONFIG = {
         'path': 'tests.mocks.MockJwtTokenService',
         'config': {
             'access_tokens': {
-                token: (authenticated_user.email, {}),
+                valid_token: (authenticated_user.email, {}),
             }
         }
     }
     MockJwtTokenService.cleanup()
     return MockJwtTokenService
+
+
+@pytest.fixture
+def not_existing_user_email():
+    email = constants.NOT_EXISTING_USER_EMAIL
+    assert not User.objects.filter(email=email).exists()
+    return email
+
+
+@pytest.fixture
+def verified_user():
+    user = User.objects.get(email=constants.USER_3_EMAIL)
+    assert user.has_verified_email
+    return user
+
+
+@pytest.fixture
+def verified_user_password(verified_user):
+    assert verified_user.check_password(constants.USER_3_PASSWORD)
+    return constants.USER_3_PASSWORD
+
+
+@pytest.fixture
+def not_verified_user_without_registration_record():
+    user = User.objects.get(email=constants.USER_1_EMAIL)
+    assert not user.has_verified_email
+    assert not Registration.objects.filter(user=user).exists()
+    return user
+
+
+@pytest.fixture
+def not_verified_user():
+    user = User.objects.get(email=constants.USER_2_EMAIL)
+    assert not user.has_verified_email
+    return user
+
+
+@pytest.fixture
+def not_verified_user_password(not_verified_user):
+    assert not_verified_user.check_password(constants.USER_2_PASSWORD)
+    return constants.USER_2_PASSWORD

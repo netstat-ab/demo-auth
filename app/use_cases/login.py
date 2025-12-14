@@ -10,7 +10,7 @@ class LoginError(Exception):
 
 def login(email: str, password: str) -> JwtToken:
     try:
-        user = User.objects.get(email=email, has_verified=True)
+        user = User.objects.get(email=email, has_verified_email=True)
     except User.DoesNotExist:
         raise LoginError
 

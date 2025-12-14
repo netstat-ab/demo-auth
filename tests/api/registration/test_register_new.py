@@ -4,7 +4,6 @@ import freezegun
 import pytest
 
 from app.models import User
-from tests.api import constants
 from ._base import SuccessUserRegistrationTestBase
 
 pytestmark = pytest.mark.django_db
@@ -12,10 +11,9 @@ pytestmark = pytest.mark.django_db
 
 class TestNotExistingUser(SuccessUserRegistrationTestBase):
     @pytest.fixture
-    def data(self, password='P@ssw0rd') -> dict:
-        assert not User.objects.filter(email=constants.NOT_EXISTING_USER_EMAIL).exists()
+    def data(self, not_existing_user_email, password='P@ssw0rd') -> dict:
         return {
-            'email': constants.NOT_EXISTING_USER_EMAIL,
+            'email': not_existing_user_email,
             'password': password,
             'password_confirmation': password,
         }
