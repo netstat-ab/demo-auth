@@ -29,34 +29,47 @@ class MockMessageBroker(MessageBroker):
 
 
 class MockJwtTokenService(JwtTokenService):
+    generated_access = []
+    generated_refresh = []
+
     def decode_refresh(self, token):
-        return self._decode(token, 'refresh')
+        return self.__decode(token, 'refresh')
 
     def decode_access(self, token):
-        return self._decode(token, 'access')
+        return self.__decode(token, 'access')
 
-    def _decode(self, token, token_type):
-        tokens = self.config[f'{token_type}_tokens']
-        try:
-            value = tokens[token]
-        except KeyError:
+    def __decode(self, token, token_type):
+        value = self.__find_token(token, token_type)
+
+        if value is None:
             raise JwtTokenServiceException(JwtTokenServiceException.ERR_INVALID)
+
         if isinstance(value, Exception):
             raise value
+
+        return value
+
+    def __find_token(self, token, token_type):
+        value = self.config[f'{token_type}_tokens'].get(token)
+        if value is None:
+            value = getattr(self, f'generated_{token_type}').get(token)
         return value
 
     def generate_refresh(self, sub: str):
-        tokens = self.config['refresh_tokens']
-        jti = str(len(tokens))
-        token = f'{jti}:{sub}'
-        tokens[token] = jti, sub
+        jti = str(len(self.generated_refresh))
+        token = f'refresh:{jti}:{sub}'
+        self.generated_refresh.append(token)
         return token
 
-    def generate_access(self, sub: str, role: str, permissions: tuple[str]):
-        tokens = self.config['access_tokens']
-        token = f'{sub}:{role}:{":".join(permissions)}'
-        tokens[token] = sub, role, permissions
+    def generate_access(self, sub: str, extra: dict):
+        token = f'access:{len(self.generated_access)}:{sub}'
+        self.generated_access.append(token)
         return token
+
+    @classmethod
+    def cleanup(cls):
+        cls.generated_access.clear()
+        cls.generated_refresh.clear()
 
 
 class MockRegistrationCodeGenerator(RegistrationCodeGenerator):

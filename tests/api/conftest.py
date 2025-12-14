@@ -2,7 +2,7 @@ import pytest
 from rest_framework.test import APIClient
 
 from app.models import User
-from tests.mocks import MockMessageBroker
+from tests.mocks import MockMessageBroker, MockJwtTokenService
 from . import constants
 
 
@@ -42,7 +42,9 @@ def jwt_token_service(settings, authenticated_user, token):
         'path': 'tests.mocks.MockJwtTokenService',
         'config': {
             'access_tokens': {
-                token: (authenticated_user.email, 'some_role', ('some_permission',)),
+                token: (authenticated_user.email, {}),
             }
         }
     }
+    MockJwtTokenService.cleanup()
+    return MockJwtTokenService
