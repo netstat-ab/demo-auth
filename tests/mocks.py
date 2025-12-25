@@ -29,8 +29,8 @@ class MockMessageBroker(MessageBroker):
 
 
 class MockJwtTokenService(JwtTokenService):
-    generated_access = []
-    generated_refresh = []
+    generated_access = {}
+    generated_refresh = {}
 
     def decode_refresh(self, token):
         return self.__decode(token, 'refresh')
@@ -50,7 +50,8 @@ class MockJwtTokenService(JwtTokenService):
         return value
 
     def __find_token(self, token, token_type):
-        value = self.config[f'{token_type}_tokens'].get(token)
+        tokens = self.config.get(f'{token_type}_tokens', {})
+        value = tokens.get(token)
         if value is None:
             value = getattr(self, f'generated_{token_type}').get(token)
         return value
@@ -58,12 +59,12 @@ class MockJwtTokenService(JwtTokenService):
     def generate_refresh(self, sub: str):
         jti = str(len(self.generated_refresh))
         token = f'refresh:{jti}:{sub}'
-        self.generated_refresh.append(token)
+        self.generated_refresh[token] = jti, sub
         return token
 
     def generate_access(self, sub: str, extra: dict):
         token = f'access:{len(self.generated_access)}:{sub}'
-        self.generated_access.append(token)
+        self.generated_access[token] = sub, extra
         return token
 
     @classmethod

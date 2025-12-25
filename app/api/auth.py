@@ -1,4 +1,4 @@
-__all__ = ['JWTAuthentication', 'anonymous_only', 'authenticated_only']
+__all__ = ['AuthData', 'JWTAuthentication', 'anonymous_only', 'authenticated_only']
 
 import functools
 
@@ -7,6 +7,11 @@ from rest_framework import authentication, exceptions
 
 from app.constants import ANONYMOUS_ONLY, INVALID_HEADER
 from app.services import JwtTokenServiceException, JwtTokenService
+
+
+class AuthData:
+    def __init__(self, subj: str):
+        self.subj = subj
 
 
 class JWTAuthentication(authentication.BaseAuthentication):
@@ -35,10 +40,10 @@ class JWTAuthentication(authentication.BaseAuthentication):
 
         service = JwtTokenService.get_instance()
         try:
-            decoded = service.decode_access(auth_header[1])
+            subj, _ = service.decode_access(auth_header[1])
         except JwtTokenServiceException as e:
             raise exceptions.AuthenticationFailed(e.description)
-        return None, decoded
+        return None, AuthData(subj)
 
     def authenticate_header(self, request):
         return self.keyword

@@ -37,7 +37,7 @@ class JwtTokenServiceException(Exception):
 
     @property
     def description(self):
-        return
+        return self.DESCRIPTIONS[self.code]
 
 
 class JwtTokenService(BaseService, abc.ABC):

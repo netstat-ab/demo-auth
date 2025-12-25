@@ -23,7 +23,7 @@ def test_it_responds_with_tokens_pair(request_login, data, jwt_token_service):
     assert request.json() == {
         'status': constants.STATUS_SUCCESS,
         'details': {
-            'refresh_token': jwt_token_service.generated_refresh[0],
-            'access_token': jwt_token_service.generated_access[0],
+            'refresh_token': list(jwt_token_service.generated_refresh)[0],
+            'access_token': list(jwt_token_service.generated_access)[0],
         },
     }

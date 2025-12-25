@@ -2,6 +2,7 @@ import pytest
 from rest_framework.test import APIClient
 
 from app.models import User, Registration
+from app.services import JwtTokenServiceException
 from tests.mocks import MockMessageBroker, MockJwtTokenService
 from . import constants
 
@@ -42,14 +43,22 @@ def invalid_refresh_token():
 
 
 @pytest.fixture
-def jwt_token_service(settings, authenticated_user, authenticated_access_token):
+def expired_refresh_token():
+    return 'expired_token'
+
+
+@pytest.fixture
+def jwt_token_service(settings, authenticated_user, authenticated_access_token, expired_refresh_token):
     settings.JWT_TOKEN_SERVICE_CONFIG = {
         'path': 'tests.mocks.MockJwtTokenService',
         'config': {
             'access_tokens': {
                 authenticated_access_token: (authenticated_user.email, {}),
+            },
+            'refresh_tokens': {
+                expired_refresh_token: JwtTokenServiceException(JwtTokenServiceException.ERR_EXPIRED),
             }
-        }
+        },
     }
     MockJwtTokenService.cleanup()
     return MockJwtTokenService

@@ -86,7 +86,7 @@ class UserViewSet(viewsets.ViewSet):
     def rotate_refresh_token(self, request):
         data = self._get_validated_data(request.data, serializers.RefreshTokenSerializer)
         try:
-            new_token = use_cases.rotate_refresh_token(request.auth['sub'], data['token'])
+            new_token = use_cases.rotate_refresh_token(request.auth.subj, data['token'])
         except use_cases.RotateRefreshTokenError as e:
             data = {'status': STATUS_FAILED, 'details': {'reason': _(e.description)}}
         else:

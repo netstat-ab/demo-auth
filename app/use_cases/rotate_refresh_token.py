@@ -17,7 +17,7 @@ def rotate_refresh_token(for_subject: str, token: JwtToken) -> JwtToken:
     try:
         jti, sub = service.decode_refresh(token)
     except JwtTokenServiceException as e:
-        raise RotateRefreshTokenError(str(e))
+        raise RotateRefreshTokenError(e.description)
     if for_subject != sub:
         raise RotateRefreshTokenError(_(INVALID_TOKEN))
     return service.generate_refresh(sub)
