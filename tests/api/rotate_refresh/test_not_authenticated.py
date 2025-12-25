@@ -4,7 +4,7 @@ import pytest
 
 
 @pytest.fixture
-def request_rotate_refresh(client, url, authenticated_access_token):
+def request_rotate_refresh(client, url):
     return partial(client.post, url, content_type='application/json')
 
 

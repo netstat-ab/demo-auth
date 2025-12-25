@@ -6,11 +6,6 @@ pytestmark = pytest.mark.django_db
 empty = object()
 
 
-@pytest.fixture
-def data() -> dict:
-    return {'token': 'invalid'}
-
-
 @pytest.mark.parametrize(
     'refresh_token,expected_error',
     [
