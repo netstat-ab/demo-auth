@@ -6,8 +6,10 @@
 """
 
 import pytest
+from django.utils.translation import gettext_lazy as _
 from rest_framework import status
 
+from app.constants import STATUS_FAILED, INVALID_VERIFICATION_CODE
 from app.models import Registration
 from tests.api import constants
 
@@ -20,17 +22,17 @@ def query_params(code):
 
 
 class FailTestBase:
-    def test_it_responds_with_200(self, do_get, query_params):
-        response = do_get(data=query_params)
+    def test_it_responds_with_200(self, request_verify_email, query_params):
+        response = request_verify_email(data=query_params)
         assert response.status_code == status.HTTP_200_OK
 
-    def test_it_responds_with_status_fail(self, do_get, query_params):
-        response = do_get(data=query_params)
-        assert response.json() == {'status': 'failed', 'details': {'reason': 'invalid_code'}}
+    def test_it_responds_with_status_fail(self, request_verify_email, query_params):
+        response = request_verify_email(data=query_params)
+        assert response.json() == {'status': STATUS_FAILED, 'details': {'reason': _(INVALID_VERIFICATION_CODE)}}
 
     @pytest.mark.django_db(transaction=True)
-    def test_it_does_not_trigger_email_verified_event(self, do_get, query_params, message_broker):
-        do_get(data=query_params)
+    def test_it_does_not_trigger_email_verified_event(self, request_verify_email, query_params, message_broker):
+        request_verify_email(data=query_params)
         assert message_broker.email_verifications == []
 
 

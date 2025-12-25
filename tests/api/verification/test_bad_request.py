@@ -22,23 +22,23 @@ def do_get_authenticated(client, url, authenticated_user_access_token):
     )
 
 
-def test_no_code(do_get):
-    response = do_get()
+def test_no_code(request_verify_email):
+    response = request_verify_email()
     assert response.status_code == status.HTTP_400_BAD_REQUEST
     assert response.json() == {'code': ['This field is required.']}
 
 
-def test_empty_code(do_get):
-    response = do_get(data={'code': ''})
+def test_empty_code(request_verify_email):
+    response = request_verify_email(data={'code': ''})
     assert response.status_code == status.HTTP_400_BAD_REQUEST
     assert response.json() == {'code': ['This field may not be blank.']}
 
 
-def test_code_too_long(do_get):
+def test_code_too_long(request_verify_email):
     max_len = Registration.MAX_CODE_LENGTH
-    response = do_get(data={'code': 'a' * max_len})
+    response = request_verify_email(data={'code': 'a' * max_len})
     assert response.status_code == status.HTTP_200_OK
-    response = do_get(data={'code': 'a' * (max_len + 1)})
+    response = request_verify_email(data={'code': 'a' * (max_len + 1)})
     assert response.status_code == status.HTTP_400_BAD_REQUEST
     assert response.json() == {'code': [f'Ensure this field has no more than {max_len} characters.']}
 

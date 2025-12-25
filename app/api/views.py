@@ -6,7 +6,7 @@ from rest_framework import viewsets, decorators, status
 from rest_framework.response import Response
 
 from app import use_cases
-from app.constants import STATUS_FAILED, STATUS_SUCCESS, INVALID_CREDENTIALS
+from app.constants import STATUS_FAILED, STATUS_SUCCESS, INVALID_CREDENTIALS, INVALID_VERIFICATION_CODE
 from . import serializers
 from .auth import anonymous_only, authenticated_only
 
@@ -34,7 +34,7 @@ class UserViewSet(viewsets.ViewSet):
         try:
             use_cases.verify_email(code=data['code'])
         except use_cases.EmailVerificationError:
-            data = {'status': STATUS_FAILED, 'details': {'reason': 'invalid_code'}}
+            data = {'status': STATUS_FAILED, 'details': {'reason': _(INVALID_VERIFICATION_CODE)}}
         else:
             data = {'status': STATUS_SUCCESS}
         return Response(status=status.HTTP_200_OK, data=data)

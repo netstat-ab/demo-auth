@@ -10,5 +10,5 @@ def url():
 
 
 @pytest.fixture
-def do_get(client, url):
+def request_verify_email(client, url):
     return partial(client.get, url, content_type='application/json')
