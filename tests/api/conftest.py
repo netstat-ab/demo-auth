@@ -38,11 +38,6 @@ def authenticated_user_access_token():
 
 
 @pytest.fixture
-def other_user_refresh_token():
-    return 'other_user_refresh_token'
-
-
-@pytest.fixture
 def invalid_refresh_token():
     return 'invalid_token'
 
@@ -53,12 +48,23 @@ def expired_refresh_token():
 
 
 @pytest.fixture
+def other_user_refresh_token():
+    return 'other_user_refresh_token'
+
+
+@pytest.fixture
+def authenticated_user_refresh_token():
+    return 'authenticated_user_refresh_token'
+
+
+@pytest.fixture
 def jwt_token_service(
         settings,
         authenticated_user,
         authenticated_user_access_token,
-        other_user_refresh_token,
+        authenticated_user_refresh_token,
         expired_refresh_token,
+        other_user_refresh_token,
 ):
     settings.JWT_TOKEN_SERVICE_CONFIG = {
         'path': 'tests.mocks.MockJwtTokenService',
@@ -67,8 +73,9 @@ def jwt_token_service(
                 authenticated_user_access_token: (authenticated_user.email, {}),
             },
             'refresh_tokens': {
+                authenticated_user_refresh_token: ('1000', authenticated_user.email),
                 expired_refresh_token: JwtTokenServiceException(JwtTokenServiceException.ERR_EXPIRED),
-                other_user_refresh_token: ('1000', 'no_matter@mail.com'),
+                other_user_refresh_token: ('1001', 'no_matter@mail.com'),
             }
         },
     }
