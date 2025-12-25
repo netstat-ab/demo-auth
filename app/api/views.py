@@ -12,7 +12,6 @@ from .auth import anonymous_only, authenticated_only, AuthData
 
 
 # TODO:
-#  refresh access token
 #  logout (revoke access token + revoke access token)
 #  update password
 #  recover password
@@ -77,6 +76,7 @@ class UserViewSet(viewsets.ViewSet):
         return Response(status=status.HTTP_200_OK, data=data)
 
     @decorators.action(methods=['POST'], detail=False, url_path='refresh-access')
+    @authenticated_only
     def refresh_access_token(self, request):
         data = self._get_validated_data(request.data, serializers.RefreshTokenSerializer)
         try:
