@@ -8,12 +8,11 @@ from rest_framework.response import Response
 from app import use_cases
 from app.constants import STATUS_FAILED, STATUS_SUCCESS, INVALID_CREDENTIALS, INVALID_VERIFICATION_CODE
 from . import serializers
-from .auth import anonymous_only, authenticated_only
+from .auth import anonymous_only, authenticated_only, AuthData
 
 
 # TODO:
 #  refresh access token
-#  refresh refresh token
 #  logout (revoke access token + revoke access token)
 #  update password
 #  recover password
@@ -79,14 +78,23 @@ class UserViewSet(viewsets.ViewSet):
 
     @decorators.action(methods=['POST'], detail=False, url_path='refresh-access')
     def refresh_access_token(self, request):
-        ...
+        data = self._get_validated_data(request.data, serializers.RefreshTokenSerializer)
+        try:
+            auth: AuthData = request.auth
+            new_token = use_cases.refresh_access_token(auth.subj, data['token'], auth.extra)
+        except use_cases.RefreshAccessTokenError as e:
+            data = {'status': STATUS_FAILED, 'details': {'reason': _(e.description)}}
+        else:
+            data = {'status': STATUS_SUCCESS, 'details': {'access_token': new_token}}
+        return Response(status=status.HTTP_200_OK, data=data)
 
     @decorators.action(methods=['POST'], detail=False, url_path='rotate-refresh')
     @authenticated_only
     def rotate_refresh_token(self, request):
         data = self._get_validated_data(request.data, serializers.RefreshTokenSerializer)
         try:
-            new_token = use_cases.rotate_refresh_token(request.auth.subj, data['token'])
+            auth: AuthData = request.auth
+            new_token = use_cases.rotate_refresh_token(auth.subj, data['token'])
         except use_cases.RotateRefreshTokenError as e:
             data = {'status': STATUS_FAILED, 'details': {'reason': _(e.description)}}
         else:

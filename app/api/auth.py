@@ -10,8 +10,9 @@ from app.services import JwtTokenServiceException, JwtTokenService
 
 
 class AuthData:
-    def __init__(self, subj: str):
+    def __init__(self, subj: str, extra: dict):
         self.subj = subj
+        self.extra = extra
 
 
 class JWTAuthentication(authentication.BaseAuthentication):
@@ -40,10 +41,10 @@ class JWTAuthentication(authentication.BaseAuthentication):
 
         service = JwtTokenService.get_instance()
         try:
-            subj, _ = service.decode_access(auth_header[1])
+            subj, extra = service.decode_access(auth_header[1])
         except JwtTokenServiceException as e:
             raise exceptions.AuthenticationFailed(e.description)
-        return None, AuthData(subj)
+        return None, AuthData(subj, extra)
 
     def authenticate_header(self, request):
         return self.keyword
