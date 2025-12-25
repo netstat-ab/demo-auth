@@ -33,6 +33,13 @@ def authenticated_user():
 
 
 @pytest.fixture
+def authenticated_user_password(authenticated_user):
+    password = constants.USER_3_PASSWORD
+    assert authenticated_user.check_password(constants.USER_3_PASSWORD)
+    return password
+
+
+@pytest.fixture
 def authenticated_user_access_token():
     return 'no_matter'
 
