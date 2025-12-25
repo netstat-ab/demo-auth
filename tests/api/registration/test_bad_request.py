@@ -24,7 +24,7 @@ def data() -> dict:
 
 
 @pytest.fixture
-def do_post(client, url):
+def request_register(client, url):
     return partial(client.post, url, content_type='application/json')
 
 
@@ -66,7 +66,7 @@ def do_post_authenticated(client, url, authenticated_user_access_token):
         'null password_confirmation',
     ]
 )
-def test_invalid_field(do_post, data, field, value, expected_error):
+def test_invalid_field(request_register, data, field, value, expected_error):
     """
     Есть недостающие поля или поля неправильного формата.
     """
@@ -74,16 +74,16 @@ def test_invalid_field(do_post, data, field, value, expected_error):
         data.pop(field)
     else:
         data[field] = value
-    response = do_post(data=data)
+    response = request_register(data=data)
     assert response.status_code == status.HTTP_400_BAD_REQUEST
     assert response.json() == {field: [expected_error]}
 
 
-def test_password_mismatch(do_post):
+def test_password_mismatch(request_register):
     """
     Пароль не совпадает с подтверждением пароля
     """
-    response = do_post(data={
+    response = request_register(data={
         'email': 'valid@example.com',
         'password': 'P@ssw0rd',
         'password_confirmation': 'DoN0tM@tch',
