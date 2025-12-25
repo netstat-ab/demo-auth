@@ -12,10 +12,10 @@ class RotateRefreshTokenError(Exception):
         return self.args[0]
 
 
-def rotate_refresh_token(for_subject: str, token: JwtToken) -> JwtToken:
+def rotate_refresh_token(for_subject: str, refresh_token: JwtToken) -> JwtToken:
     service = JwtTokenService.get_instance()
     try:
-        jti, sub = service.decode_refresh(token)
+        jti, sub = service.decode_refresh(refresh_token)
     except JwtTokenServiceException as e:
         raise RotateRefreshTokenError(e.description)
     if for_subject != sub:
