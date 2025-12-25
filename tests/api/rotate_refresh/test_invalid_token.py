@@ -17,3 +17,12 @@ def test_expired_token(request_rotate_refresh, jwt_token_service, expired_refres
     response = request_rotate_refresh(data={'token': expired_refresh_token})
     assert response.status_code == status.HTTP_200_OK
     assert response.json() == {'details': {'reason': _(TOKEN_HAS_EXPIRED)}, 'status': 'failed'}
+
+
+def test_other_user_token(request_rotate_refresh, jwt_token_service, other_user_refresh_token):
+    """
+    В теле запроса токен, принадлежащий другому пользователю (не аутентифицированному). Вряд ли такое возможно.
+    """
+    response = request_rotate_refresh(data={'token': other_user_refresh_token})
+    assert response.status_code == status.HTTP_200_OK
+    assert response.json() == {'details': {'reason': _(INVALID_TOKEN)}, 'status': 'failed'}

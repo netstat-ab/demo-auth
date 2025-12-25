@@ -12,10 +12,10 @@ def url():
 
 
 @pytest.fixture
-def request_rotate_refresh(client, url, authenticated_access_token):
+def request_rotate_refresh(client, url, authenticated_user_access_token):
     return partial(
         client.post,
         url,
         content_type='application/json',
-        headers=authorization_header(authenticated_access_token),
+        headers=authorization_header(authenticated_user_access_token),
     )
