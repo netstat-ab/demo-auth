@@ -13,7 +13,6 @@ from .auth import anonymous_only, authenticated_only, AuthData
 
 # TODO:
 #  logout (revoke access token + revoke access token)
-#  update password
 #  recover password
 class UserViewSet(viewsets.ViewSet):
     @decorators.action(methods=['POST'], detail=False)
@@ -40,7 +39,15 @@ class UserViewSet(viewsets.ViewSet):
     @decorators.action(methods=['POST'], detail=False, url_path='password-update')
     @authenticated_only
     def update_password(self, request):
-        ...
+        data = self._get_validated_data(request.data, serializers.UpdatePasswordSerializer)
+        auth: AuthData = request.auth
+        try:
+            use_cases.update_password(auth.subj, data['current_password'], data['new_password'])
+        except use_cases.UpdatePasswordError as e:
+            data = {'status': STATUS_FAILED, 'details': {'code': e.code, 'description': e.message}}
+        else:
+            data = {'status': STATUS_SUCCESS}
+        return Response(data=data)
 
     @decorators.action(methods=['POST'], detail=False, url_path='password-recover')
     @anonymous_only

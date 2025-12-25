@@ -1,0 +1,68 @@
+"""
+Тестирование повторной регистрации, когда запрашиваемый email зарегистрирован, но не подтвержден.
+"""
+
+import freezegun
+import pytest
+
+from app.models import User, Registration
+from tests.api import constants
+from ._base import SuccessUserRegistrationTestBase
+
+pytestmark = pytest.mark.django_db
+
+
+class NotVerifiedUserTestBase(SuccessUserRegistrationTestBase):
+    @pytest.fixture
+    def data(self, now, user, password='P@ssw0rd') -> dict:
+        assert not user.has_verified_email
+        assert not user.check_password(password)
+        assert user.created_at != now
+        return {
+            'email': user.email,
+            'password': password,
+            'password_confirmation': password,
+        }
+
+    @pytest.mark.django_db(transaction=True)
+    def test_it_triggers_success_registration_event(self, client, url, data, message_broker, registration_code):
+        client.post(url, data=data, content_type='application/json')
+        assert message_broker.success_registrations == [(data['email'], registration_code)]
+
+    def test_it_does_not_creates_user(self, client, url, data):
+        users_count = User.objects.count()
+        client.post(url, data=data, content_type='application/json')
+        assert User.objects.count() == users_count
+
+    def test_sets_does_not_modifies_created_at(self, client, url, data, now):
+        user = User.objects.get(email=data['email'])
+        previous_created_at_value = user.created_at
+        with freezegun.freeze_time(now):
+            client.post(url, data=data, content_type='application/json')
+        user.refresh_from_db()
+        assert user.created_at == previous_created_at_value
+
+
+class TestUserHaveNoRegistrationRecord(NotVerifiedUserTestBase):
+    @pytest.fixture
+    def user(self, not_verified_user_without_registration_record):
+        return not_verified_user_without_registration_record
+
+
+class TestUserHaveRegistrationRecord(NotVerifiedUserTestBase):
+    @pytest.fixture
+    def user(self, not_verified_user):
+        return not_verified_user
+
+    @pytest.fixture
+    def existing_registration_id(self, user):
+        registration = Registration.objects.get(user=user)
+        assert registration.code == constants.USER_2_REGISTRATION_CODE
+        return registration.id
+
+    def test_it_removes_old_registration_record(self, client, url, data, existing_registration_id, now):
+        """
+        Предыдущий блок данных регистрации удаляется
+        """
+        client.post(url, data=data, content_type='application/json')
+        assert not Registration.objects.filter(id=existing_registration_id).exists()

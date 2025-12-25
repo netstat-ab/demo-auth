@@ -17,19 +17,25 @@ empty = object()
 @pytest.fixture
 def data() -> dict:
     return {
-        'email': 'valid_email@example.com',
-        'password': 'P@ssw0rd',
-        'password_confirmation': 'P@ssw0rd',
+        'current_password': 'valid_email@example.com',
+        'new_password': 'P@ssw0rd',
+        'new_password_confirmation': 'P@ssw0rd',
     }
 
 
+
 @pytest.fixture
-def request_register(client, url):
-    return partial(client.post, url, content_type='application/json')
+def request_password_update(client, url, authenticated_user, authenticated_user_access_token):
+    return partial(
+        client.post,
+        url,
+        content_type='application/json',
+        headers=authorization_header(authenticated_user_access_token),
+    )
 
 
 @pytest.fixture
-def request_register_authenticated(client, url, authenticated_user_access_token):
+def do_post_authenticated(client, url, authenticated_user_access_token):
     return partial(
         client.post,
         url,
@@ -92,7 +98,7 @@ def test_password_mismatch(request_register):
     assert response.json() == {'non_field_errors': ['Passwords do not match.']}
 
 
-def test_authenticated(request_register_authenticated, data, jwt_token_service):
-    response = request_register_authenticated(data=data)
+def test_authenticated(do_post_authenticated, data, jwt_token_service):
+    response = do_post_authenticated(data=data)
     assert response.status_code == status.HTTP_400_BAD_REQUEST
     assert response.json() == [_(ANONYMOUS_ONLY)]
